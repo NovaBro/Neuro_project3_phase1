@@ -1,3 +1,4 @@
 rm -rf env
 python3 -m venv env
-pip install numpy pandas matplotlib anndata
+source ./env/bin/activate
+pip install numpy pandas matplotlib anndata kaggle cellpose
