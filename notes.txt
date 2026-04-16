@@ -1,0 +1,9 @@
+cd 
+
+cp /scratch/pl2820/competition/
+
+cp /scratch/pl2820/competition/generate_submission.py .
+cp /scratch/pl2820/competition/metric.py .
+cp /scratch/pl2820/competition/reference/ .
+cp /scratch/pl2820/competition/test_spots.csv .
+cp /scratch/pl2820/competition/sample_submission.csv .
