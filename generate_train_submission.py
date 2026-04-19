@@ -42,80 +42,103 @@ Example usage from the command line:
 import argparse
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+from pathlib import Path
+
+output_path = Path("assigned_spots")
+output_path.mkdir(exist_ok=True)
 
 
 def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:
     """
-    Build a Kaggle submission DataFrame from segmentation masks and test spots.
-
-    Parameters
-    ----------
-    masks : dict
-        Dict mapping FOV name to a 2D segmentation mask.
-        e.g. {'FOV_A': np.ndarray(2048, 2048), 'FOV_B': ..., ...}
-        Each mask has 0 = background, >0 = cell ID.
-    test_spots : pd.DataFrame
-        The test_spots.csv DataFrame. Must have columns:
-        spot_id, fov, image_row, image_col
-
-    Returns
-    -------
-    pd.DataFrame
-        Submission DataFrame with columns: spot_id, fov, cluster_id
-        (same row order as test_spots)
+    Build submission while keeping memory usage low (process FOV by FOV).
     """
     required = ['spot_id', 'fov', 'image_row', 'image_col']
     missing = [c for c in required if c not in test_spots.columns]
     if missing:
         raise ValueError(f"test_spots DataFrame missing columns: {missing}")
 
-    parts = []
+    # We'll build the result directly on a copy of the needed columns
+    submission = test_spots[['spot_id', 'fov']].copy()
+    submission['cluster_id'] = 'background'   # default
+
+    output_path = Path("assigned_spots_temp")
+    if output_path.exists():
+        import shutil
+        shutil.rmtree(output_path)   # clean previous run if needed
+    output_path.mkdir(exist_ok=True)
+
     for fov, mask in masks.items():
-        fov_spots = test_spots[test_spots['fov'] == fov].copy()
+        fov_spots = test_spots[test_spots['fov'] == fov]
         if fov_spots.empty:
-            print(f"  WARNING: no spots for {fov}, skipping")
+            print(f" WARNING: no spots for {fov}, skipping")
             continue
 
         if mask.shape != (2048, 2048):
-            raise ValueError(
-                f"Mask for {fov} must be shape (2048, 2048), got {mask.shape}"
-            )
+            raise ValueError(f"Mask for {fov} must be shape (2048, 2048), got {mask.shape}")
 
         rows = fov_spots['image_row'].values
         cols = fov_spots['image_col'].values
+
         valid = (rows >= 0) & (rows < 2048) & (cols >= 0) & (cols < 2048)
 
-        cluster_ids = np.full(len(fov_spots), 'background', dtype=object)
         mask_vals = np.zeros(len(fov_spots), dtype=int)
-        mask_vals[valid] = mask[rows[valid], cols[valid]]
-        for i in range(len(fov_spots)):
-            if mask_vals[i] > 0:
-                # Prefix with FOV name so cluster IDs are unique across FOVs
-                cluster_ids[i] = f'{fov}_cell_{mask_vals[i]}'
+        if valid.any():
+            mask_vals[valid] = mask[rows[valid], cols[valid]]
 
-        n_assigned = (cluster_ids != 'background').sum()
+        # Vectorized cluster_id assignment (much better than the old for-loop)
+        cluster_ids = np.full(len(fov_spots), 'background', dtype=object)
+        positive = mask_vals > 0
+        if positive.any():
+            # This is fast and low-memory
+            cluster_ids[positive] = np.char.add(
+                f"{fov}_cell_", mask_vals[positive].astype(str)
+            )
+
+        n_assigned = positive.sum()
         print(
-            f"  {fov}: {len(fov_spots):,} spots, {int(mask.max())} cells in mask, "
+            f" {fov}: {len(fov_spots):,} spots, {int(mask.max())} cells in mask, "
             f"{n_assigned:,} spots assigned ({100 * n_assigned / len(fov_spots):.1f}%)"
         )
 
-        parts.append(pd.DataFrame({
+        # Optional: still write to parquet per FOV if you want persistence
+        df_part = pd.DataFrame({
             'spot_id': fov_spots['spot_id'].values,
             'fov': fov,
             'cluster_id': cluster_ids,
-        }))
-    # breakpoint()
-    combined = pd.concat(parts, ignore_index=True)
+        })
+        table = pa.Table.from_pandas(df_part, preserve_index=False)
+        pq.write_to_dataset(
+            table,
+            root_path=output_path,
+            partition_cols=['fov'],
+            existing_data_behavior='overwrite_or_ignore'
+        )
 
-    # Preserve the original row order from test_spots.csv
-    submission = (
-        test_spots[['spot_id', 'fov']]
-        .merge(combined[['spot_id', 'cluster_id']], on='spot_id', how='left')
-    )
-    submission['cluster_id'] = submission['cluster_id'].fillna('background')
+        # === Critical: Update submission in place for this FOV only ===
+        # Use index alignment or merge on spot_id for this small slice
+        submission.loc[fov_spots.index, 'cluster_id'] = cluster_ids
+
+    # If you prefer a merge-based update (slightly safer with large data):
+    # submission['cluster_id'] = submission['cluster_id'].astype('object')
+    # for fov in masks.keys():
+    #     part = pd.read_parquet(output_path / f"fov={fov}")
+    #     submission = submission.merge(
+    #         part[['spot_id', 'cluster_id']], 
+    #         on='spot_id', how='left', suffixes=('', '_new')
+    #     )
+    #     submission['cluster_id'] = submission['cluster_id_new'].fillna(submission['cluster_id'])
+    #     submission = submission.drop(columns=['cluster_id_new'])
 
     return submission[['spot_id', 'fov', 'cluster_id']]
 
+"""
+    python generate_train_submission.py \
+    --mask_A FOV_001_mask.npy \
+    --test_spots spots_train.csv \
+    --output submission_FOV_001_mask.csv
+"""
 
 def main():
     parser = argparse.ArgumentParser(
