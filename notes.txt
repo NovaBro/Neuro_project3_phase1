@@ -7,3 +7,11 @@ cp /scratch/pl2820/competition/metric.py .
 cp /scratch/pl2820/competition/reference/ .
 cp /scratch/pl2820/competition/test_spots.csv .
 cp /scratch/pl2820/competition/sample_submission.csv .
+
+cell_boundaries_train.csv
+spots_train.csv
+test_spots.csv
+
+cp /scratch/pl2820/competition/train/ground_truth/cell_boundaries_train.csv .
+cp /scratch/pl2820/competition/train/ground_truth/spots_train.csv .
+cp /scratch/pl2820/competition/test_spots.csv .
