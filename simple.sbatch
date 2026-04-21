@@ -1,3 +1,4 @@
+#!/bin/bash
 #SBATCH --job-name=wmz2007_neuro_proj
 #SBATCH --account=cs_gy_9223-2026sp
 #SBATCH --partition=g2-standard-12
