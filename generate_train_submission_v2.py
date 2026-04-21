@@ -121,30 +121,32 @@ def main():
     parser = argparse.ArgumentParser(
         description='Generate Kaggle submission CSV from segmentation masks'
     )
-    parser.add_argument('--mask_A', required=True, help='Path to FOV_A .npy mask (2048x2048 int)')
-    parser.add_argument('--mask_B', required=True, help='Path to FOV_B .npy mask (2048x2048 int)')
-    parser.add_argument('--mask_C', required=True, help='Path to FOV_C .npy mask (2048x2048 int)')
-    parser.add_argument('--mask_D', required=True, help='Path to FOV_D .npy mask (2048x2048 int)')
-    parser.add_argument('--test_spots', default='test_spots.csv', help='Path to test_spots.csv')
+    parser.add_argument('--mask_A', default="FOV_001_mask.npy")
+    # FOV_001_mask.npy
+    # parser.add_argument('--mask_B', required=True, help='Path to FOV_B .npy mask (2048x2048 int)')
+    # parser.add_argument('--mask_C', required=True, help='Path to FOV_C .npy mask (2048x2048 int)')
+    # parser.add_argument('--mask_D', required=True, help='Path to FOV_D .npy mask (2048x2048 int)')
+    parser.add_argument('--spots_train', default='spots_train.csv', help='Path to test_spots.csv')
     parser.add_argument('--output', default='submission.csv', help='Output submission CSV path')
     args = parser.parse_args()
 
-    print("Loading test_spots.csv...")
-    test_spots = pd.read_csv(args.test_spots)
-    print(f"  {len(test_spots):,} spots across {test_spots['fov'].nunique()} FOVs")
+    print("Loading spots_train.csv...")
+    spots_train = pd.read_csv(args.spots_train)
+    spots_train = spots_train[spots_train['fov'] == 'FOV001']
+    print(f"  {len(spots_train):,} spots across {spots_train['fov'].nunique()} FOVs")
 
     print("\nLoading masks...")
     masks = {
         'FOV_A': np.load(args.mask_A),
-        'FOV_B': np.load(args.mask_B),
-        'FOV_C': np.load(args.mask_C),
-        'FOV_D': np.load(args.mask_D),
+        # 'FOV_B': np.load(args.mask_B),
+        # 'FOV_C': np.load(args.mask_C),
+        # 'FOV_D': np.load(args.mask_D),
     }
     for fov, mask in masks.items():
         print(f"  {fov}: shape={mask.shape}, dtype={mask.dtype}, {int(mask.max())} cells")
 
     print("\nBuilding submission...")
-    submission = build_submission(masks, test_spots)
+    submission = build_submission(masks, spots_train)
 
     submission.to_csv(args.output, index=False)
     print(f"\nSubmission written to {args.output}")

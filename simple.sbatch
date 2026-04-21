@@ -15,7 +15,7 @@ set -e
 
 python3 -m venv temp_env
 source temp_env/bin/activate
-pip3 install cellpose pandas sklearn
+pip3 install cellpose pandas scikit-learn
 
 python3 SUBMISSION.py
 
