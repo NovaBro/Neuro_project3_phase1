@@ -43,7 +43,7 @@ import argparse
 import numpy as np
 import pandas as pd
 
-#  Need to create the test_spots
+#  Need to create the test_spots, for metric scoring.
 def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:
     """
     Build a Kaggle submission DataFrame from segmentation masks and test spots.
