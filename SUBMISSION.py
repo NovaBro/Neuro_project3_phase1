@@ -11,7 +11,6 @@ from cellpose.models import CellposeModel
 
 from metric import score
 from generate_submission import build_submission
-from generate_train_submission import build_submission as one_submission
 
 COMP_DIR = Path("/scratch/pl2820/competition/")
 FOV_list_dir = os.listdir(COMP_DIR / 'test')
