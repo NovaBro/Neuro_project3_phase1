@@ -28,7 +28,8 @@ def load_dax(filepath, height=2048, width=2048):
     return raw.reshape(n_frames, height, width)
 
 for f in FOV_list_dir:
-    epi_stack = load_dax(COMP_DIR / f"{f}/Epi-750s5-635s5-545s1-473s5-408s5_001.dax")
+    fov_id = f.split('_')[1]
+    epi_stack = load_dax(COMP_DIR / 'test' / f"{f}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_id}.dax")
     print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
     z_plane = 2  # middle z-plane
     dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
