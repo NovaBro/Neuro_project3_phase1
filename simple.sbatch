@@ -1,13 +1,12 @@
-#!/bin/bash
 #SBATCH --job-name=wmz2007_neuro_proj
 #SBATCH --account=cs_gy_9223-2026sp
 #SBATCH --partition=g2-standard-12
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=12
-#SBATCH --mem=40G
+#SBATCH --mem=32G
 #SBATCH --time=01:00:00
-#SBATCH --comment=“gpu_mps=yes”
+#SBATCH --gres=gpu:1
 #SBATCH --output=/home/wmz2007/NeuroInformatics/Neuro_project3_phase1/dir1_%j.out
 #SBATCH --error=/home/wmz2007/NeuroInformatics/Neuro_project3_phase1/dir1_%j.err
 #SBATCH --signal=B:SIGUSR1@120
