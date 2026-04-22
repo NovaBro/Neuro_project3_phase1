@@ -39,9 +39,14 @@ Example usage from the command line:
         --output submission.csv
 """
 
+import re
 import argparse
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+
+from paths import *
 
 #  Need to create the test_spots, for metric scoring.
 def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:
@@ -74,6 +79,7 @@ def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:
         fov_spots = test_spots[test_spots['fov'] == fov].copy()
         if fov_spots.empty:
             print(f"  WARNING: no spots for {fov}, skipping")
+            print(f"{test_spots.head()}")
             continue
 
         if mask.shape != (2048, 2048):
@@ -118,26 +124,29 @@ def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
+    # TODO: MAKE GENERALIZABLE TO WHOLE TRAIN SET
     parser = argparse.ArgumentParser(
         description='Generate Kaggle submission CSV from segmentation masks'
     )
-    parser.add_argument('--mask_A', default="FOV_001_mask.npy")
+    parser.add_argument('--mask_001', default= "FOV_001_mask.npy")
     # FOV_001_mask.npy
+    # parser.add_argument('--mask_A', required=True, help='Path to FOV_A .npy mask (2048x2048 int)')
     # parser.add_argument('--mask_B', required=True, help='Path to FOV_B .npy mask (2048x2048 int)')
     # parser.add_argument('--mask_C', required=True, help='Path to FOV_C .npy mask (2048x2048 int)')
     # parser.add_argument('--mask_D', required=True, help='Path to FOV_D .npy mask (2048x2048 int)')
-    parser.add_argument('--spots_train', default='spots_train.csv', help='Path to test_spots.csv')
-    parser.add_argument('--output', default='submission.csv', help='Output submission CSV path')
+    parser.add_argument('--spots_train', default=RESULTS / 'spots_train_w_cell_id.csv', help='Path to test_spots.csv')
+    parser.add_argument('--output', default=RESULTS / 'submission_train.csv', help='Output submission CSV path')
     args = parser.parse_args()
 
     print("Loading spots_train.csv...")
     spots_train = pd.read_csv(args.spots_train)
-    spots_train = spots_train[spots_train['fov'] == 'FOV001']
+    # spots_train = spots_train[spots_train['fov'] == 'FOV_001']
     print(f"  {len(spots_train):,} spots across {spots_train['fov'].nunique()} FOVs")
 
     print("\nLoading masks...")
     masks = {
-        'FOV_A': np.load(args.mask_A),
+        'FOV_001': np.load(args.mask_001),
+        # 'FOV_A': np.load(args.mask_A),
         # 'FOV_B': np.load(args.mask_B),
         # 'FOV_C': np.load(args.mask_C),
         # 'FOV_D': np.load(args.mask_D),

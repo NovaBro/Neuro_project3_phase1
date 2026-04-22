@@ -48,6 +48,8 @@ python provided_code/generate_submission.py \
 Here you can adjust gpu size, and time allocated. 
 
 ## TODO List:
-- TODO: MODIFY generate_submission.py FOR TRAINING SET
-- TODO: VERIFY CLAUD OPTIMIZATION
-- TODO: Clean up Directory
+- Improve model input
+- MODIFY generate_submission.py FOR TRAINING SET, which means making it generalize to training dataset (`generate_train_submission_v2.py`)
+  - This is needed for both the train and test split of the Kaggle Training data. 1) for training the model, and 2) testing the model on the Kaggel Training Data
+- ~~VERIFY CLAUD OPTIMIZATION~~
+- ~~Clean up Directory~~
