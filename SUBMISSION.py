@@ -1,3 +1,7 @@
+"""
+This script is to be used in the SBATCH on HPC, just for Kaggle Submission
+"""
+
 import os
 from pathlib import Path
 import warnings
@@ -9,8 +13,8 @@ import numpy as np
 # import matplotlib.pyplot as plt
 from cellpose.models import CellposeModel
 
-from metric import score
-from generate_submission import build_submission
+from provided_code.metric import score
+from provided_code.generate_submission import build_submission
 
 COMP_DIR = Path("/scratch/pl2820/competition/")
 FOV_list_dir = os.listdir(COMP_DIR / 'test')
@@ -36,10 +40,13 @@ for f in FOV_list_dir:
     polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
     # Model evaluation
 
+    # ==============================================
+    # NOTE: IF DIFFERENT MODEL / INFERENCE, CHANGE HERE:
     # Cellpose v4+: use CellposeModel (not models.Cellpose)
     model = CellposeModel(model_type='nuclei', gpu=True)
     # eval() returns 3 values: masks, flows, styles
     masks, flows, styles = model.eval(dapi, diameter=30, channels=[0, 0])
+    # ==============================================
 
     print(f'Segmentation complete!')
     print(f'Mask shape: {masks.shape}')
@@ -47,6 +54,7 @@ for f in FOV_list_dir:
 
     # Save masks to file
     np.save(f"{f}_mask.npy", masks)
+    # TODO: Save to results folder / or special folder?
 
 # !    python generate_submission.py \
 #         --mask_A FOV_A_mask.npy \
@@ -55,3 +63,4 @@ for f in FOV_list_dir:
 #         --mask_D FOV_D_mask.npy \
 #         --test_spots test_spots.csv \
 #         --output full_submission.csv
+

@@ -10,8 +10,8 @@ import anndata as ad
 import matplotlib.pyplot as plt
 from cellpose.models import CellposeModel
 
-from metric import score
-from generate_submission import build_submission
+from provided_code.metric import score
+from provided_code.generate_submission import build_submission
 from generate_train_submission import build_submission as one_submission
 
 # DATA_DIR = '/scratch/vsp7230/Last_Colab/data'

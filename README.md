@@ -1,0 +1,53 @@
+# Project 3 - Phase 1 
+
+## NOTE, FILE REFACTORING MAY HAVE CAUSED IT TO NOT WORK, JUST CHECK FILE PATHS IF ERROR.
+I have tried rectify this just to keep in mind
+
+## How to submit to Kaggle
+There are only two files required to submit to Kaggle, `simple.sbatch` and `SUBMISSION.py`. 
+When you are one the HPC, run:
+```bash
+sbatch simple.sbatch
+```
+
+Thats it!
+
+What is inside the simple.sbatch file:
+```
+#!/bin/bash
+#SBATCH --job-name=wmz2007_neuro_proj
+#SBATCH --account=cs_gy_9223-2026sp
+#SBATCH --partition=g2-standard-12
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
+#SBATCH --gres=gpu:1
+#SBATCH --output=/home/wmz2007/NeuroInformatics/Neuro_project3_phase1/dir1_%j.out
+#SBATCH --error=/home/wmz2007/NeuroInformatics/Neuro_project3_phase1/dir1_%j.err
+#SBATCH --signal=B:SIGUSR1@120
+set -e
+
+# Create the python environment, NOTE: NOT using singularity or conda!
+python3 -m venv temp_env
+source temp_env/bin/activate
+pip3 install cellpose pandas scikit-learn
+
+python3 SUBMISSION.py
+
+# Using already given code
+python provided_code/generate_submission.py \
+  --mask_A FOV_A_mask.npy \
+  --mask_B FOV_B_mask.npy \
+  --mask_C FOV_C_mask.npy \
+  --mask_D FOV_D_mask.npy \
+  --test_spots test_spots.csv \
+  --output full_submission.csv
+```
+Here you can adjust gpu size, and time allocated. 
+
+## TODO List:
+- TODO: MODIFY generate_submission.py FOR TRAINING SET
+- TODO: VERIFY CLAUD OPTIMIZATION
+- TODO: Clean up Directory
