@@ -19,10 +19,10 @@ pip3 install cellpose pandas scikit-learn
 
 python3 SUBMISSION.py
 
-python generate_submission.py \
+python provided_code/generate_submission.py \
   --mask_A FOV_A_mask.npy \
   --mask_B FOV_B_mask.npy \
   --mask_C FOV_C_mask.npy \
   --mask_D FOV_D_mask.npy \
-  --test_spots test_spots.csv \
+  --test_spots provided_code/test_spots.csv \
   --output full_submission.csv

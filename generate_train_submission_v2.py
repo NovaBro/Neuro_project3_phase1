@@ -46,7 +46,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from paths import *
+from my_paths import *
 
 #  Need to create the test_spots, for metric scoring.
 def build_submission(masks: dict, test_spots: pd.DataFrame) -> pd.DataFrame:

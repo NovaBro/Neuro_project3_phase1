@@ -1,5 +1,7 @@
 """
 This file is to generate the solution to the training dataset.
+CAN GENERATE SOLUTION TO THE ENTIRE DATASET, VERY FAST!
+Ending generated files is big, ~192M
 """
 import os
 import argparse
@@ -10,7 +12,7 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 
-from paths import *
+from my_paths import *
 
 
 spots_train_df = pd.read_csv(provided_code / 'spots_train.csv')

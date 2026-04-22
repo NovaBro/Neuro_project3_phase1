@@ -1,5 +1,6 @@
 """
 This script is to be used in the SBATCH on HPC, just for Kaggle Submission
+Generates the masks npy files used in generate_submission.py
 """
 
 import os

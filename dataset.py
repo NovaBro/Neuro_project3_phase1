@@ -4,8 +4,7 @@ import anndata as ad
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-provided_code = Path('./provided_code')
-RESULTS = Path('./results')
+from my_paths import *
 
 def get_stats(x):
     print(f"MEAN: {np.mean(x)}")
@@ -14,7 +13,7 @@ def get_stats(x):
     print(f"MAX: {np.max(x)}")
 
 
-raw = np.fromfile('./FOV_001/Epi-750s5-635s5-545s1-473s5-408s5_001.dax', dtype=np.uint16).reshape(-1, 2048, 2048)
+raw = np.fromfile(TRAIN / 'FOV_001/Epi-750s5-635s5-545s1-473s5-408s5_001.dax', dtype=np.uint16).reshape(-1, 2048, 2048)
 print(raw.shape)
 dapi_z2  = raw[16]   # DAPI at middle z-plane
 print((dapi_z2 > 300).sum())
@@ -56,3 +55,47 @@ print(test_spots_df.columns)
 print(test_spots_df.head())
 print('GLOBAL_Z:')
 get_stats(test_spots_df['global_z'])
+
+train_spots_solution_df = pd.read_csv('results/spots_train_w_cell_id_solution.csv')
+print("\nspots_train_w_cell_id_solution.csv")
+print(train_spots_solution_df.columns)
+print(train_spots_solution_df.head())
+# Various Tests
+# print(train_spots_solution_df['fov'].unique())
+print(train_spots_solution_df[train_spots_solution_df['fov'] == 'FOV_019']['global_z'].unique())
+
+
+from matplotlib.widgets import Slider
+
+def load_dax(filepath, height=2048, width=2048):
+    """Load a .dax raw image file. Raw uint16 binary, no header."""
+    raw = np.fromfile(filepath, dtype=np.uint16)
+    n_frames = len(raw) // (height * width)
+    return raw.reshape(n_frames, height, width)
+
+fig, ax = plt.subplots()
+# ax.imshow(dapi)
+epi_stack = load_dax(TRAIN /  'FOV_001/Epi-750s5-635s5-545s1-473s5-408s5_001.dax')
+print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
+z_plane = 2  # middle z-plane
+dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
+polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
+
+# Create slider axis
+# ax_slider = plt.axes([0.2, 0.1, 0.65, 0.03])
+slider = Slider(ax, 'Amplitude', 0.0, 5.0, valinit=0)
+
+# Update function
+def update(val):
+    a = slider.val
+    z_plane = int(a)  # middle z-plane
+    dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
+    polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
+
+    # line.set_ydata(a * np.sin(x))
+    ax.imshow(dapi)
+    fig.canvas.draw_idle()
+
+# Connect slider to update function
+slider.on_changed(update)
+plt.show()
