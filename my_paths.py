@@ -6,3 +6,4 @@ RESULTS = Path('./results')
 TRAIN = Path('./train')
 
 DATA_DIR = './'
+# /scratch/pl2820/competition/
