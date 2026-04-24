@@ -1,16 +1,17 @@
 set -e
 
-# python3 main.py test-infer --test_mode cellpose_model_A
+# === Testing Setups ===
+python3 main.py test-infer --test_mode cellpose_model_A
 # python3 main.py test-infer --test_mode cellpose_model_B
 # python3 main.py test-infer --test_mode cellpose_model_C
 # python3 main.py test-infer --test_mode cellpose_model_D
-# python3 main.py test-infer --test_mode cellpose_model_E
+python3 main.py test-infer --test_mode trained
 
 python3 main.py test-score --test_mode cellpose_model_A 
-python3 main.py test-score --test_mode cellpose_model_B
-python3 main.py test-score --test_mode cellpose_model_C
-python3 main.py test-score --test_mode cellpose_model_D
-
+# python3 main.py test-score --test_mode cellpose_model_B
+# python3 main.py test-score --test_mode cellpose_model_C
+# python3 main.py test-score --test_mode cellpose_model_D
+python3 main.py test-score --test_mode trained-A
 
 # WHOLE
 # ./run_test.sh > ./output_logs/score_1-10.txt 2> ./output_logs/tqdm_1-10.txt

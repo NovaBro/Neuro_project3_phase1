@@ -25,7 +25,8 @@ from generate_train_submission_v2 import build_submission
 
 from my_paths import *
 # DATA_DIR = '/scratch/vsp7230/Last_Colab/data'
-rng = np.random.default_rng(seed=42)
+SEED = 42
+rng = np.random.default_rng(seed=SEED)
 
 # TODO: In the future, create main utiles py
 def get_stats(x):
@@ -38,12 +39,12 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('mode', help="What to do, train, test, etc")
-    parser.add_argument('--test_mode', 
+    parser.add_argument('--test-mode', 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
                         help="Argument to send to test mode")
-    parser.add_argument('--batchsize', default=8, 
+    parser.add_argument('--batch_size', default=1, 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
-                        help="Batchsize. For cellpose, 8 takes 7GB on gpu")
+                        help="batch_size. For cellpose, 8 takes 7GB on gpu")
     return parser.parse_args()
 
 def load_dax(filepath, height=2048, width=2048):
@@ -54,6 +55,24 @@ def load_dax(filepath, height=2048, width=2048):
 
 def normalize(x):
     return (x - x.min()) / (x.max() - x.min()) 
+
+# Get cell boundries and convert from a string to a list
+def parse_float_list(text):
+    if isinstance(text, str):
+        return np.fromstring(text, sep=',').tolist()
+    return None
+
+# Dataset helper functions
+def clip_norm(x, clip_range=[5, 99]):
+    vmin, vmax = np.percentile(x, clip_range)
+    x = np.clip(x, vmin, vmax)
+    x = normalize(x)
+    return x
+
+# Dataset helper functions
+def generate_mix(dapi_np, polyt_np, balance=0.5):
+    return clip_norm(dapi_np) * balance + (1-balance) * clip_norm(polyt_np)
+
 
 def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, diameter=30, channels=[0, 0]):
     match format_id:
@@ -90,33 +109,14 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
             masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
             return masks, flows, styles
 
-        case "cellpose_model_E":
+        case "trained-A":
             dapi, polyt = input_data
 
-            vmin, vmax = np.percentile(polyt, [2, 98])
-            clip_polyt = np.clip(polyt, vmin, vmax)
-
-            weighted_average_input = 0.25 * normalize(clip_polyt) + 0.75 * normalize(dapi)
             # eval() returns 3 values: masks, flows, styles
-            masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
+            masks, flows, styles = model.eval(generate_mix(dapi, polyt) * 255, diameter, channels)
             return masks, flows, styles
 
-# Get cell boundries and convert from a string to a list
-def parse_float_list(text):
-    if isinstance(text, str):
-        return np.fromstring(text, sep=',').tolist()
-    return None
 
-# Dataset helper functions
-def clip_norm(x, clip_range=[5, 99]):
-    vmin, vmax = np.percentile(x, clip_range)
-    x = np.clip(x, vmin, vmax)
-    x = normalize(x)
-    return x
-
-# Dataset helper functions
-def generate_mix(dapi_np, polyt_np, balance=0.5):
-    return clip_norm(dapi_np) * balance + (1-balance) * clip_norm(polyt_np)
 
 
 
@@ -127,8 +127,8 @@ args = get_args()
 all_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
 # all_fovs.sort()
 
-train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100))
-train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90))
+train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100), random_state=SEED)
+train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_state=SEED)
 
 custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
 
@@ -157,7 +157,10 @@ elif args.mode == 'test-infer':
     # === Load Model ===
     # NOTE TEST DIFFERENT MODELS HERE
     # Cellpose v4+: use CellposeModel (not models.Cellpose)
-    model = CellposeModel(model_type='nuclei', gpu=True)
+    # model = CellposeModel(model_type='nuclei', gpu=True)
+
+    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model='./models/my_new_model_epoch_0250')
+
     # format_id = 'cellpose_model_A'
     # format_id = 'cellpose_model_B'
     # format_id = 'cellpose_model_C'
@@ -296,6 +299,8 @@ elif args.mode == 'gen-data':
             z_plane = 2  # middle z-plane
             dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
             polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
+
+            # NOTE: Dataset changing done here
             cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
 
             # Original Images:
@@ -321,6 +326,8 @@ elif args.mode == 'train':
                                 train_data=images, train_labels=labels,
                                 test_data=test_images, test_labels=test_labels,
                                 weight_decay=0.1, learning_rate=1e-5,
-                                save_every=10,
-                                n_epochs=100, model_name="my_new_model")
-
+                                save_every=25, save_each=True,
+                                batch_size=args.batch_size,
+                                n_epochs=250, model_name="my_new_model")
+# 20 min per 100 epoch
+# 1 hr per 300 epoch

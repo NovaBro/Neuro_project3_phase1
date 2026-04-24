@@ -1,24 +1,31 @@
 /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/val/
-2026-04-24 14:24:26,396 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
-2026-04-24 14:24:26,396 [INFO] 
+2026-04-24 17:11:32,779 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 17:11:32,779 [INFO] 
 cellpose version: 	4.1.1 
 platform:       	linux 
 python version: 	3.12.3 
 torch version:  	2.11.0+cu130
-2026-04-24 14:24:26,401 [INFO] not all flows are present, running flow generation for all images
-2026-04-24 14:24:27,349 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/train/ folder have labels
-2026-04-24 14:24:27,349 [INFO] not all flows are present, running flow generation for all images
-2026-04-24 14:24:27,466 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/val/ folder have labels
-2026-04-24 14:24:27,674 [INFO] ** TORCH CUDA version installed and working. **
-2026-04-24 14:24:27,674 [INFO] >>>> using GPU (CUDA)
-2026-04-24 14:24:28,785 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
-2026-04-24 14:24:28,963 [INFO] >>> converting bfloat16 network to float32 for training
-2026-04-24 14:24:28,967 [INFO] computing flows for labels
-2026-04-24 14:24:55,837 [INFO] computing flows for labels
-2026-04-24 14:24:58,639 [INFO] >>> computing diameters
-2026-04-24 14:24:58,785 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
-2026-04-24 14:24:59,822 [INFO] >>> n_epochs=100, n_train=32, n_test=4
-2026-04-24 14:24:59,822 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
-2026-04-24 14:24:59,823 [INFO] >>> saving model to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model
-2026-04-24 14:25:14,640 [INFO] 0, train_loss=0.7015, test_loss=0.1462, LR=0.000000, time 14.82s
-2026-04-24 14:26:25,134 [INFO] 5, train_loss=0.6256, test_loss=0.1091, LR=0.000006, time 85.31s
+2026-04-24 17:11:32,784 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 17:11:33,720 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/train/ folder have labels
+2026-04-24 17:11:33,720 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 17:11:33,841 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/val/ folder have labels
+2026-04-24 17:11:34,045 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 17:11:34,045 [INFO] >>>> using GPU (CUDA)
+2026-04-24 17:11:35,060 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
+2026-04-24 17:11:35,213 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 17:11:35,216 [INFO] computing flows for labels
+2026-04-24 17:12:02,051 [INFO] computing flows for labels
+2026-04-24 17:12:04,893 [INFO] >>> computing diameters
+2026-04-24 17:12:05,035 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 17:12:06,202 [INFO] >>> n_epochs=250, n_train=32, n_test=4
+2026-04-24 17:12:06,202 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 17:12:06,202 [INFO] >>> saving model to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model
+2026-04-24 17:12:21,123 [INFO] 0, train_loss=0.6953, test_loss=0.1462, LR=0.000000, time 14.92s
+2026-04-24 17:13:31,726 [INFO] 5, train_loss=0.6155, test_loss=0.1267, LR=0.000006, time 85.52s
+2026-04-24 17:14:42,211 [INFO] 10, train_loss=0.4879, test_loss=0.1034, LR=0.000010, time 156.01s
+2026-04-24 17:17:02,701 [INFO] 20, train_loss=0.4618, test_loss=0.0823, LR=0.000010, time 296.50s
+2026-04-24 17:18:12,680 [INFO] saving network parameters to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model_epoch_0025
+2026-04-24 17:19:23,988 [INFO] 30, train_loss=0.4438, test_loss=0.0810, LR=0.000010, time 437.79s
+2026-04-24 17:21:44,607 [INFO] 40, train_loss=0.3917, test_loss=0.0598, LR=0.000010, time 578.41s
+2026-04-24 17:24:04,986 [INFO] 50, train_loss=0.4007, test_loss=0.0870, LR=0.000010, time 718.78s
+2026-04-24 17:24:04,986 [INFO] saving network parameters to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model_epoch_0050
