@@ -1,4 +1,4 @@
 rm -rf env
 python3 -m venv env
 source ./env/bin/activate
-pip install numpy pandas matplotlib anndata kaggle cellpose scipy scikit-learn tifffile pyarrow
+pip install numpy pandas matplotlib anndata kaggle cellpose scipy scikit-learn tifffile pyarrow shapely tqdm
