@@ -19,6 +19,7 @@ pip3 install cellpose pandas scikit-learn
 
 python3 SUBMISSION.py
 
+# Submission Too Kaggle
 python provided_code/generate_submission.py \
   --mask_A FOV_A_mask.npy \
   --mask_B FOV_B_mask.npy \

@@ -29,3 +29,8 @@ torch version:  	2.11.0+cu130
 2026-04-24 17:21:44,607 [INFO] 40, train_loss=0.3917, test_loss=0.0598, LR=0.000010, time 578.41s
 2026-04-24 17:24:04,986 [INFO] 50, train_loss=0.4007, test_loss=0.0870, LR=0.000010, time 718.78s
 2026-04-24 17:24:04,986 [INFO] saving network parameters to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model_epoch_0050
+2026-04-24 17:26:26,041 [INFO] 60, train_loss=0.3880, test_loss=0.0790, LR=0.000010, time 859.84s
+2026-04-24 17:28:46,473 [INFO] 70, train_loss=0.3989, test_loss=0.0530, LR=0.000010, time 1000.27s
+2026-04-24 17:29:56,480 [INFO] saving network parameters to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model_epoch_0075
+2026-04-24 17:31:07,596 [INFO] 80, train_loss=0.3541, test_loss=0.0668, LR=0.000010, time 1141.39s
+2026-04-24 17:33:28,208 [INFO] 90, train_loss=0.4294, test_loss=0.0750, LR=0.000010, time 1282.01s
