@@ -1,17 +1,22 @@
 import re
 import os
+import random
 import shutil
 import argparse
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
+import cv2
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import anndata as ad
 import matplotlib.pyplot as plt
 from cellpose.models import CellposeModel
+from cellpose import io, models, train
+from sklearn.model_selection import train_test_split
+
 
 from provided_code.metric import score
 # from provided_code.generate_submission import build_submission
@@ -20,6 +25,7 @@ from generate_train_submission_v2 import build_submission
 
 from my_paths import *
 # DATA_DIR = '/scratch/vsp7230/Last_Colab/data'
+rng = np.random.default_rng(seed=42)
 
 # TODO: In the future, create main utiles py
 def get_stats(x):
@@ -84,20 +90,56 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
             masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
             return masks, flows, styles
 
+        case "cellpose_model_E":
+            dapi, polyt = input_data
+
+            vmin, vmax = np.percentile(polyt, [2, 98])
+            clip_polyt = np.clip(polyt, vmin, vmax)
+
+            weighted_average_input = 0.25 * normalize(clip_polyt) + 0.75 * normalize(dapi)
+            # eval() returns 3 values: masks, flows, styles
+            masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
+            return masks, flows, styles
+
+# Get cell boundries and convert from a string to a list
+def parse_float_list(text):
+    if isinstance(text, str):
+        return np.fromstring(text, sep=',').tolist()
+    return None
+
+# Dataset helper functions
+def clip_norm(x, clip_range=[5, 99]):
+    vmin, vmax = np.percentile(x, clip_range)
+    x = np.clip(x, vmin, vmax)
+    x = normalize(x)
+    return x
+
+# Dataset helper functions
+def generate_mix(dapi_np, polyt_np, balance=0.5):
+    return clip_norm(dapi_np) * balance + (1-balance) * clip_norm(polyt_np)
+
+
+
 args = get_args()
+
+# === Initial Setup ===
+# NOTE: ADD TEST SPLIT FILTER HERE
+all_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
+# all_fovs.sort()
+
+train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100))
+train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90))
+
+custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
 
 # === Test Variables ===
 format_id = args.test_mode
 
-# NOTE: ADD TEST SPLIT FILTER HERE
-# test_fovs = ['FOV_001']
-# test_fovs = os.listdir(TRAIN)
-test_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
-test_fovs.sort()
-
 # Test different sections of the data
+# all_fovs.sort()
+# test_fovs = all_fovs
 # test_fovs = test_fovs[0:(len(test_fovs) // 4)]
-test_fovs = test_fovs[(len(test_fovs) // 4):(len(test_fovs) // 4) * 3]
+# test_fovs = test_fovs[(len(test_fovs) // 4):(len(test_fovs) // 4) * 3]
 # test_fovs = test_fovs[-(len(test_fovs) // 4):]
 
 # fov_files = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
@@ -181,8 +223,104 @@ elif args.mode == 'test-score':
     print(f"Format: {format_id}")
     print(f"Final Score average_score_across_z: {average_score_across_z / len(z_planes)}\n")
 
+elif args.mode == 'gen-data':
+    shutil.rmtree((custom_data_dir / 'train'))
+    shutil.rmtree((custom_data_dir / 'val'))
+    (custom_data_dir / 'train').mkdir(parents=True, exist_ok=True)
+    (custom_data_dir / 'val').mkdir(parents=True, exist_ok=True)
+
+    # Load the spots train solution, with cell ids, only for FOV_001 and at z = 2
+    train_solution_df = pd.read_csv('results/spots_train_w_cell_id_solution.csv')
+
+    # Get cell boundries and convert from a string to a list
+    cell_boundaries_train_df = pd.read_csv(provided_code / 'cell_boundaries_train.csv')
+    cell_boundaries_train_df.iloc[:, 1:] = cell_boundaries_train_df.iloc[:, 1:].applymap(parse_float_list)
+    cell_boundaries_train_df.rename({'Unnamed: 0':'gt_cluster_id'}, inplace=True, axis=1)
+
+    # Cell Boundry Mapping
+    reference_xy = pd.read_csv(provided_code / 'fov_metadata.csv')
+
+    for train_val_fov in [(train_fovs, 'train'), (val_fovs, 'val')]:
+        for fov in tqdm(train_val_fov[0]):
+            fov_num = fov.split('_')[1]
+
+            # Load the spots train solution, with cell ids, only for FOV_*** and at z = 2
+            train_solution_df_fov = train_solution_df[(train_solution_df['fov'] == fov) 
+                                                & (train_solution_df['global_z'] == 2.0)] # NOTE: ONLY Z = 2
+            # Cell Boundry Mapping
+            reference_xy_fov = reference_xy[reference_xy['fov'] == fov]
+
+            # Only get cell boundries found in FOV_*** and z = 2
+            solution_cells_df = cell_boundaries_train_df.merge(train_solution_df_fov, how='inner', on='gt_cluster_id')
+            solution_cells_df = solution_cells_df[['gt_cluster_id', 'boundaryX_z2','boundaryY_z2' , 'image_row','image_col', 'fov', 'spot_id']]
+
+            # Consolidate so each cell gets one row and 1 boundry
+            def agg_func(df):
+                df = df.sort_values(['image_row', 'image_col'])
+                x_b = df['boundaryX_z2'].iloc[0]
+                y_b = df['boundaryY_z2'].iloc[0]
+
+                return pd.Series({
+                    'boundaryX_z2' : x_b,
+                    'boundaryY_z2' : y_b,
+                })
+
+            apply_solution_cells_df = solution_cells_df.groupby('gt_cluster_id').apply(agg_func)
+            apply_solution_cells_df = apply_solution_cells_df.reset_index()
+
+            # --- 1. Initialize the master mask OUTSIDE the loop ---
+            # Using int32 to accommodate many cell IDs
+            master_mask = np.zeros((2048, 2048), dtype=np.int32)
+
+            for i in range(len(apply_solution_cells_df)):
+                x_data = apply_solution_cells_df.loc[i, 'boundaryX_z2']
+                y_data = apply_solution_cells_df.loc[i, 'boundaryY_z2']
+
+                # Your coordinate transformation math
+                x_px = 2048 - (np.array(x_data) - np.array(reference_xy_fov['fov_x'])) / np.array(reference_xy_fov['pixel_size'])
+                y_px = (np.array(y_data) - np.array(reference_xy_fov['fov_y'])) / np.array(reference_xy_fov['pixel_size'])
+                
+                # OpenCV expects (x, y) pairs. 
+                # If your intentional swap means X_coordinate = y_px, then zip(y_px, x_px) is correct.
+                polygon_points = np.array(list(zip(y_px, x_px)), dtype=np.int32)
+
+                # --- 2. Fill the master_mask in-place ---
+                # We use i + 1 so the first cell isn't 0 (background color)
+                cv2.fillPoly(master_mask, [polygon_points], color=int(i + 1))
+
+            # MASKED SOLUTION
+            cv2.imwrite(custom_data_dir / train_val_fov[1] / f'cells_{fov_num}_masks.png', master_mask)
+
+            # Mixed Input Image
+            epi_stack = load_dax(TRAIN /  f"{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov.split('_')[1]}.dax")
+            z_plane = 2  # middle z-plane
+            dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
+            polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
+            cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
+
+            # Original Images:
+            # cv2.imwrite(custom_data_dir / train_val_fov[1]  / 'dapi.png', normalize(dapi) * 255)
+            # cv2.imwrite(custom_data_dir / train_val_fov[1]  / 'polyt.png', normalize(polyt) * 255)
 
 
 elif args.mode == 'train':
-    
-    pass
+    # For running locally on PC
+    # nohup python3 main.py train > cellpose_train.txt 2> cellpose_train_error.txt &
+    train_dir = (os.getcwd() / custom_data_dir / 'train').__str__() + '/'
+    test_dir = (os.getcwd() / custom_data_dir / 'val').__str__() + '/'
+    print(train_dir, test_dir)
+
+    io.logger_setup()
+    output = io.load_train_test_data(train_dir, test_dir, image_filter="_img",
+                                    mask_filter="_masks", look_one_level_down=False)
+    images, labels, image_names, test_images, test_labels, image_names_test = output
+
+    model = models.CellposeModel(gpu=True)
+
+    model_path, train_losses, test_losses = train.train_seg(model.net,
+                                train_data=images, train_labels=labels,
+                                test_data=test_images, test_labels=test_labels,
+                                weight_decay=0.1, learning_rate=1e-5,
+                                save_every=10,
+                                n_epochs=100, model_name="my_new_model")
+

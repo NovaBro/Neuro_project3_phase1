@@ -1,0 +1,24 @@
+/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/val/
+2026-04-24 14:24:26,396 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 14:24:26,396 [INFO] 
+cellpose version: 	4.1.1 
+platform:       	linux 
+python version: 	3.12.3 
+torch version:  	2.11.0+cu130
+2026-04-24 14:24:26,401 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 14:24:27,349 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/train/ folder have labels
+2026-04-24 14:24:27,349 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 14:24:27,466 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi_polyt/val/ folder have labels
+2026-04-24 14:24:27,674 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 14:24:27,674 [INFO] >>>> using GPU (CUDA)
+2026-04-24 14:24:28,785 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
+2026-04-24 14:24:28,963 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 14:24:28,967 [INFO] computing flows for labels
+2026-04-24 14:24:55,837 [INFO] computing flows for labels
+2026-04-24 14:24:58,639 [INFO] >>> computing diameters
+2026-04-24 14:24:58,785 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 14:24:59,822 [INFO] >>> n_epochs=100, n_train=32, n_test=4
+2026-04-24 14:24:59,822 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 14:24:59,823 [INFO] >>> saving model to /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/my_new_model
+2026-04-24 14:25:14,640 [INFO] 0, train_loss=0.7015, test_loss=0.1462, LR=0.000000, time 14.82s
+2026-04-24 14:26:25,134 [INFO] 5, train_loss=0.6256, test_loss=0.1091, LR=0.000006, time 85.31s

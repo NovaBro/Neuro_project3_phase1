@@ -1,0 +1,64 @@
+Loading spots_train_w_cell_id_solution.csv ...
+ 688,237 spots across 10 FOVs
+  FOV_031: 20,359 spots, 145 cells in mask, 6,026 spots assigned (29.6%)
+  FOV_032: 12,076 spots, 159 cells in mask, 3,485 spots assigned (28.9%)
+  FOV_033: 16,636 spots, 85 cells in mask, 4,373 spots assigned (26.3%)
+  FOV_034: 16,109 spots, 142 cells in mask, 4,654 spots assigned (28.9%)
+  FOV_035: 19,768 spots, 140 cells in mask, 6,342 spots assigned (32.1%)
+  FOV_036: 11,320 spots, 104 cells in mask, 2,969 spots assigned (26.2%)
+  FOV_037: 12,727 spots, 130 cells in mask, 4,081 spots assigned (32.1%)
+  FOV_038: 14,956 spots, 154 cells in mask, 4,965 spots assigned (33.2%)
+  FOV_039: 13,496 spots, 120 cells in mask, 4,234 spots assigned (31.4%)
+  FOV_040: 12,692 spots, 92 cells in mask, 3,683 spots assigned (29.0%)
+==== Final Results ====
+Format: cellpose_model_A
+Final Score average_score_across_z: 0.6603402325642844
+
+Loading spots_train_w_cell_id_solution.csv ...
+ 688,237 spots across 10 FOVs
+  FOV_031: 20,359 spots, 148 cells in mask, 8,684 spots assigned (42.7%)
+  FOV_032: 12,076 spots, 174 cells in mask, 4,487 spots assigned (37.2%)
+  FOV_033: 16,636 spots, 96 cells in mask, 6,989 spots assigned (42.0%)
+  FOV_034: 16,109 spots, 164 cells in mask, 7,027 spots assigned (43.6%)
+  FOV_035: 19,768 spots, 157 cells in mask, 9,608 spots assigned (48.6%)
+  FOV_036: 11,320 spots, 114 cells in mask, 4,094 spots assigned (36.2%)
+  FOV_037: 12,727 spots, 130 cells in mask, 4,873 spots assigned (38.3%)
+  FOV_038: 14,956 spots, 180 cells in mask, 7,233 spots assigned (48.4%)
+  FOV_039: 13,496 spots, 141 cells in mask, 6,349 spots assigned (47.0%)
+  FOV_040: 12,692 spots, 90 cells in mask, 4,739 spots assigned (37.3%)
+==== Final Results ====
+Format: cellpose_model_B
+Final Score average_score_across_z: 0.4823398119170944
+
+Loading spots_train_w_cell_id_solution.csv ...
+ 688,237 spots across 10 FOVs
+  FOV_031: 20,359 spots, 154 cells in mask, 6,901 spots assigned (33.9%)
+  FOV_032: 12,076 spots, 173 cells in mask, 3,449 spots assigned (28.6%)
+  FOV_033: 16,636 spots, 94 cells in mask, 4,324 spots assigned (26.0%)
+  FOV_034: 16,109 spots, 148 cells in mask, 4,588 spots assigned (28.5%)
+  FOV_035: 19,768 spots, 158 cells in mask, 7,060 spots assigned (35.7%)
+  FOV_036: 11,320 spots, 110 cells in mask, 3,228 spots assigned (28.5%)
+  FOV_037: 12,727 spots, 135 cells in mask, 3,995 spots assigned (31.4%)
+  FOV_038: 14,956 spots, 168 cells in mask, 5,210 spots assigned (34.8%)
+  FOV_039: 13,496 spots, 129 cells in mask, 4,607 spots assigned (34.1%)
+  FOV_040: 12,692 spots, 99 cells in mask, 3,887 spots assigned (30.6%)
+==== Final Results ====
+Format: cellpose_model_C
+Final Score average_score_across_z: 0.6172441202462808
+
+Loading spots_train_w_cell_id_solution.csv ...
+ 688,237 spots across 10 FOVs
+  FOV_031: 20,359 spots, 157 cells in mask, 7,339 spots assigned (36.0%)
+  FOV_032: 12,076 spots, 176 cells in mask, 3,552 spots assigned (29.4%)
+  FOV_033: 16,636 spots, 93 cells in mask, 4,504 spots assigned (27.1%)
+  FOV_034: 16,109 spots, 149 cells in mask, 4,686 spots assigned (29.1%)
+  FOV_035: 19,768 spots, 158 cells in mask, 7,282 spots assigned (36.8%)
+  FOV_036: 11,320 spots, 110 cells in mask, 3,243 spots assigned (28.6%)
+  FOV_037: 12,727 spots, 136 cells in mask, 3,952 spots assigned (31.1%)
+  FOV_038: 14,956 spots, 176 cells in mask, 5,540 spots assigned (37.0%)
+  FOV_039: 13,496 spots, 131 cells in mask, 4,792 spots assigned (35.5%)
+  FOV_040: 12,692 spots, 100 cells in mask, 3,899 spots assigned (30.7%)
+==== Final Results ====
+Format: cellpose_model_D
+Final Score average_score_across_z: 0.6007626309367586
+
