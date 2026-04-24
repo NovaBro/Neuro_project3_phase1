@@ -16,8 +16,8 @@ from cellpose.models import CellposeModel
 
 from provided_code.metric import score
 from provided_code.generate_submission import build_submission
+from my_paths import *
 
-COMP_DIR = Path("/scratch/pl2820/competition/")
 FOV_list_dir = os.listdir(COMP_DIR / 'test')
 
 def get_stats(x):

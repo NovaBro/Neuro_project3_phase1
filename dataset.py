@@ -29,7 +29,7 @@ get_stats(dapi_z2)
 # plt.hist(dapi_z2.flatten(), bins=100)
 plt.savefig('dataset_py.png')
 
-cell_boundaries_train_df = pd.read_csv(provided_code / 'cell_boundaries_train.csv')
+cell_boundaries_train_df = pd.read_csv(provided_code / 'train/ground_truth' / 'cell_boundaries_train.csv')
 print("\ncell_boundaries_train.csv")
 print(cell_boundaries_train_df.columns)
 print(cell_boundaries_train_df.head())
@@ -39,7 +39,7 @@ print(type(cell_boundaries_train_df[['boundaryX_z0', 'boundaryY_z0']].iloc[0, 0]
 print(len(cell_boundaries_train_df[['boundaryX_z0', 'boundaryY_z0']].iloc[0, 0]))
 # print(cell_boundaries_train_df['Unnamed: 0'].value_counts())
 
-spots_train_df = pd.read_csv(provided_code / 'spots_train.csv')
+spots_train_df = pd.read_csv(provided_code / 'train/ground_truth' / 'spots_train.csv')
 print("\nspots_train.csv")
 print(spots_train_df.columns)
 print(spots_train_df.head())
@@ -56,7 +56,7 @@ print(test_spots_df.head())
 print('GLOBAL_Z:')
 get_stats(test_spots_df['global_z'])
 
-train_spots_solution_df = pd.read_csv('results/spots_train_w_cell_id_solution.csv')
+train_spots_solution_df = pd.read_csv('./results/spots_train_w_cell_id_solution.csv')
 print("\nspots_train_w_cell_id_solution.csv")
 print(train_spots_solution_df.columns)
 print(train_spots_solution_df.head())
@@ -75,7 +75,8 @@ def load_dax(filepath, height=2048, width=2048):
 
 fig, ax = plt.subplots()
 # ax.imshow(dapi)
-epi_stack = load_dax(TRAIN /  'FOV_001/Epi-750s5-635s5-545s1-473s5-408s5_001.dax')
+epi_stack = load_dax(provided_code / 'train' /  'FOV_001/Epi-750s5-635s5-545s1-473s5-408s5_001.dax')
+# provided_code/train/FOV_001
 print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
 z_plane = 2  # middle z-plane
 dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2

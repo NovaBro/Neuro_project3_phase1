@@ -159,7 +159,7 @@ elif args.mode == 'test-infer':
     # Cellpose v4+: use CellposeModel (not models.Cellpose)
     # model = CellposeModel(model_type='nuclei', gpu=True)
 
-    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model='./models/my_new_model_epoch_0250')
+    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model='./models/my_new_model_epoch_0225')
 
     # format_id = 'cellpose_model_A'
     # format_id = 'cellpose_model_B'
@@ -236,12 +236,12 @@ elif args.mode == 'gen-data':
     train_solution_df = pd.read_csv('results/spots_train_w_cell_id_solution.csv')
 
     # Get cell boundries and convert from a string to a list
-    cell_boundaries_train_df = pd.read_csv(provided_code / 'cell_boundaries_train.csv')
+    cell_boundaries_train_df = pd.read_csv(provided_code / 'train/ground_truth' / 'cell_boundaries_train.csv')
     cell_boundaries_train_df.iloc[:, 1:] = cell_boundaries_train_df.iloc[:, 1:].applymap(parse_float_list)
     cell_boundaries_train_df.rename({'Unnamed: 0':'gt_cluster_id'}, inplace=True, axis=1)
 
     # Cell Boundry Mapping
-    reference_xy = pd.read_csv(provided_code / 'fov_metadata.csv')
+    reference_xy = pd.read_csv(provided_code / 'reference' /'fov_metadata.csv')
 
     for train_val_fov in [(train_fovs, 'train'), (val_fovs, 'val')]:
         for fov in tqdm(train_val_fov[0]):
@@ -326,7 +326,7 @@ elif args.mode == 'train':
                                 train_data=images, train_labels=labels,
                                 test_data=test_images, test_labels=test_labels,
                                 weight_decay=0.1, learning_rate=1e-5,
-                                save_every=25, save_each=True,
+                                save_every=20, save_each=True,
                                 batch_size=args.batch_size,
                                 n_epochs=250, model_name="my_new_model")
 # 20 min per 100 epoch

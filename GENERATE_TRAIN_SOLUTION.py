@@ -15,7 +15,7 @@ import pandas as pd
 from my_paths import *
 
 
-spots_train_df = pd.read_csv(provided_code / 'spots_train.csv')
+spots_train_df = pd.read_csv(provided_code / 'train/ground_truth' / 'spots_train.csv')
 # NOTE: Insert code here to do subset
 # spots_train_df = spots_train_df[spots_train_df['fov'] == 'FOV_001']
 spots_train_df = spots_train_df[['fov', 'image_row', 'image_col', 'global_x', 'global_y', 'global_z']]
@@ -26,7 +26,7 @@ def parse_float_list(text):
         return np.fromstring(text, sep=',').tolist()
     return None
 
-cell_boundaries_train_df = pd.read_csv(provided_code / 'cell_boundaries_train.csv')
+cell_boundaries_train_df = pd.read_csv(provided_code / 'train/ground_truth' / 'cell_boundaries_train.csv')
 cell_boundaries_train_df.iloc[:, 1:] = cell_boundaries_train_df.iloc[:, 1:].applymap(parse_float_list)
 
 from tqdm import tqdm
