@@ -132,9 +132,6 @@ train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_s
 
 custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
 
-# === Test Variables ===
-format_id = args.test_mode
-
 # Test different sections of the data
 # all_fovs.sort()
 # test_fovs = all_fovs
@@ -164,8 +161,9 @@ elif args.mode == 'test-infer':
     # format_id = 'cellpose_model_A'
     # format_id = 'cellpose_model_B'
     # format_id = 'cellpose_model_C'
-    format_id = args.test_mode
     # ==================
+    # === Test Variables ===
+    format_id = args.test_mode
 
     # NOTE: COMMENT / UNCOMMENT DEBUGGING
     if (RESULTS / format_id).exists():
@@ -198,6 +196,9 @@ elif args.mode == 'test-infer':
             np.save(output_file, masks)
 
 elif args.mode == 'test-score':
+    # === Test Variables ===
+    format_id = args.test_mode
+
     # 2. Run Test
     # fov_files_inference = [fov for fov in  os.listdir(RESULTS / format_id) if fov.find('FOV_') != -1]
     print("Loading spots_train_w_cell_id_solution.csv ...")
@@ -227,6 +228,7 @@ elif args.mode == 'test-score':
     print(f"Final Score average_score_across_z: {average_score_across_z / len(z_planes)}\n")
 
 elif args.mode == 'gen-data':
+    # python3 main.py gen-data
     shutil.rmtree((custom_data_dir / 'train'))
     shutil.rmtree((custom_data_dir / 'val'))
     (custom_data_dir / 'train').mkdir(parents=True, exist_ok=True)
