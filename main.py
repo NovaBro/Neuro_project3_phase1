@@ -35,6 +35,9 @@ def get_args():
     parser.add_argument('--test_mode', 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
                         help="Argument to send to test mode")
+    parser.add_argument('--batchsize', default=8, 
+                        # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
+                        help="Batchsize. For cellpose, 8 takes 7GB on gpu")
     return parser.parse_args()
 
 def load_dax(filepath, height=2048, width=2048):
@@ -65,7 +68,7 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
         case "cellpose_model_C":
             dapi, polyt = input_data
 
-            weighted_average_input = 0.75 * normalize(polyt) + 0.25 * normalize(dapi)
+            weighted_average_input = 0.25 * normalize(polyt) + 0.75 * normalize(dapi)
             # eval() returns 3 values: masks, flows, styles
             masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
             return masks, flows, styles
@@ -73,7 +76,7 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
         case "cellpose_model_D":
             dapi, polyt = input_data
 
-            vmin, vmax = np.percentile(polyt, [20, 95])
+            vmin, vmax = np.percentile(polyt, [2, 98])
             clip_polyt = np.clip(polyt, vmin, vmax)
 
             weighted_average_input = 0.25 * normalize(clip_polyt) + 0.75 * normalize(dapi)
@@ -83,19 +86,31 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
 
 args = get_args()
 
+# === Test Variables ===
+format_id = args.test_mode
+
+# NOTE: ADD TEST SPLIT FILTER HERE
+# test_fovs = ['FOV_001']
+# test_fovs = os.listdir(TRAIN)
+test_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
+test_fovs.sort()
+
+# Test different sections of the data
+# test_fovs = test_fovs[0:(len(test_fovs) // 4)]
+test_fovs = test_fovs[(len(test_fovs) // 4):(len(test_fovs) // 4) * 3]
+# test_fovs = test_fovs[-(len(test_fovs) // 4):]
+
+# fov_files = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
+# fov_files = [fov for fov in fov_files if fov in test_fovs]
+
+z_planes = [2]
+# z_planes = [0, 1, 2, 3, 4]
+
 if args.mode == 'submit-kaggle':
     print("Uset the sbatch to create kaggle submission")
     pass
 
-elif args.mode == 'test':
-    # NOTE: ADD TEST SPLIT FILTER HERE
-    # test_fovs = ['FOV_001']
-    test_fovs = os.listdir(TRAIN)
-    test_fovs.sort()
-    # test_fovs = test_fovs[0:(len(test_fovs) // 4)]
-
-    fov_files = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
-    fov_files = [fov for fov in fov_files if fov in test_fovs]
+elif args.mode == 'test-infer':
 
     # === Load Model ===
     # NOTE TEST DIFFERENT MODELS HERE
@@ -114,12 +129,11 @@ elif args.mode == 'test':
 
     # 1. Run Inference
     # NOTE: COMMENT / UNCOMMENT DEBUGGING
-    for fov in tqdm(fov_files, desc="Testing on FOVs"):
+    for fov in tqdm(test_fovs, desc="Testing on FOVs"):
         fov_num = fov.split('_')[1]
         epi_stack = load_dax(TRAIN / f'{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax')
         # print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
-        # z_planes = [0, 1, 2, 3, 4]
-        z_planes = [2]
+        
         for z_plane in z_planes:
             # z_plane = 2  # middle z-plane
             dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
@@ -138,6 +152,7 @@ elif args.mode == 'test':
             output_file = RESULTS / format_id / f'{fov}_z{z_plane}_mask.npy'
             np.save(output_file, masks)
 
+elif args.mode == 'test-score':
     # 2. Run Test
     # fov_files_inference = [fov for fov in  os.listdir(RESULTS / format_id) if fov.find('FOV_') != -1]
     print("Loading spots_train_w_cell_id_solution.csv ...")
@@ -148,12 +163,11 @@ elif args.mode == 'test':
     # NOTE: Testing across each z-levels, since the submission function, 
     # and therefore the score function, does not account for the z-level
     average_score_across_z = 0
-    # z_planes = [0, 1, 2, 3, 4]
-    z_planes = [2]
+
     for z_level in z_planes:
         sub_train_solution_df = train_solution_df[train_solution_df['global_z'] == float(z_level)]
 
-        print(f"\nLoading masks at z level {z_level} ...")
+        if args.verbose: print(f"\nLoading masks at z level {z_level} ...") 
         masks = {}
         for fov in test_fovs:
             masks[f"{fov}"] = np.load(RESULTS / format_id / f"{fov}_z{z_level}_mask.npy")
@@ -161,13 +175,14 @@ elif args.mode == 'test':
         submit_df = build_submission(masks, sub_train_solution_df)
         score_at_z = score(sub_train_solution_df, submit_df, 'spot_id')
         average_score_across_z += score_at_z
-        print(f"  Score on z level {z_level}: {score_at_z}")
+        if args.verbose: print(f"  Score on z level {z_level}: {score_at_z}")
     
     print(f"==== Final Results ====")
     print(f"Format: {format_id}")
-    print(f"Final Score average_score_across_z: {average_score_across_z / 5}")
+    print(f"Final Score average_score_across_z: {average_score_across_z / len(z_planes)}\n")
 
 
 
 elif args.mode == 'train':
+    
     pass
