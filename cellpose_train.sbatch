@@ -27,16 +27,17 @@ set -e
 
 python3 -m venv temp_env
 source temp_env/bin/activate
-pip3 install cellpose pandas scikit-learn
+# pip3 install cellpose pandas scikit-learn
+pip3 install numpy pandas matplotlib anndata kaggle cellpose scipy scikit-learn tifffile pyarrow shapely tqdm
 
 # python3 SUBMISSION.py
 python3 main.py train --batch_size 4  > cellpose_train.txt 2> cellpose_train_error.txt
 
 # Submission Too Kaggle
 python provided_code/generate_submission.py \
-  --mask_A FOV_A_mask.npy \
-  --mask_B FOV_B_mask.npy \
-  --mask_C FOV_C_mask.npy \
-  --mask_D FOV_D_mask.npy \
+  --mask_A ./results/kaggle/my_new_model_epoch_0225/FOV_A_mask.npy \
+  --mask_B ./results/kaggle/my_new_model_epoch_0225/FOV_B_mask.npy \
+  --mask_C ./results/kaggle/my_new_model_epoch_0225/FOV_C_mask.npy \
+  --mask_D ./results/kaggle/my_new_model_epoch_0225/FOV_D_mask.npy \
   --test_spots provided_code/test_spots.csv \
   --output cellpose_trained_full_submission.csv

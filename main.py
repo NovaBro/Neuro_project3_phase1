@@ -20,7 +20,6 @@ from sklearn.model_selection import train_test_split
 
 from provided_code.metric import score
 # from provided_code.generate_submission import build_submission
-# from generate_train_submission import build_submission as one_submission
 from generate_train_submission_v2 import build_submission
 
 from my_paths import *
@@ -45,8 +44,12 @@ def get_args():
     parser.add_argument('--batch_size', default=1, 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
                         help="batch_size. For cellpose, 8 takes 7GB on gpu")
+    parser.add_argument('--custom_data_dir', default='', 
+                        # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
+                        help="folder name for new data")
     return parser.parse_args()
 
+# === Data Helper Functions ===
 def load_dax(filepath, height=2048, width=2048):
     """Load a .dax raw image file. Raw uint16 binary, no header."""
     raw = np.fromfile(filepath, dtype=np.uint16)
@@ -73,6 +76,11 @@ def clip_norm(x, clip_range=[5, 99]):
 def generate_mix(dapi_np, polyt_np, balance=0.5):
     return clip_norm(dapi_np) * balance + (1-balance) * clip_norm(polyt_np)
 
+def generate_z_stack(idx, epi_stack):
+    averaged_image = np.zeros((2048, 2048))
+    for z in range(5):
+        averaged_image += epi_stack[idx + z * 5]
+    return averaged_image / 5
 
 def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, diameter=30, channels=[0, 0]):
     match format_id:
@@ -109,7 +117,14 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
             masks, flows, styles = model.eval(weighted_average_input, diameter, channels)
             return masks, flows, styles
 
-        case "trained-A":
+        case "dapi-polyt":
+            dapi, polyt = input_data
+
+            # eval() returns 3 values: masks, flows, styles
+            masks, flows, styles = model.eval(generate_mix(dapi, polyt) * 255, diameter, channels)
+            return masks, flows, styles
+
+        case "average-z_dapi-polyt":
             dapi, polyt = input_data
 
             # eval() returns 3 values: masks, flows, styles
@@ -130,7 +145,7 @@ all_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
 train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100), random_state=SEED)
 train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_state=SEED)
 
-custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
+
 
 # Test different sections of the data
 # all_fovs.sort()
@@ -142,12 +157,61 @@ custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
 # fov_files = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
 # fov_files = [fov for fov in fov_files if fov in test_fovs]
 
+z_single = 2
 z_planes = [2]
 # z_planes = [0, 1, 2, 3, 4]
 
-if args.mode == 'submit-kaggle':
-    print("Uset the sbatch to create kaggle submission")
-    pass
+if args.mode == 'kaggle-infer':
+    # For local
+    # print("Uset the sbatch to create kaggle submission")
+
+    # === Load Model ===
+    # NOTE TEST DIFFERENT MODELS HERE
+    # Cellpose v4+: use CellposeModel (not models.Cellpose)
+    # model = CellposeModel(model_type='nuclei', gpu=True)
+
+    trained_model = 'my_new_model_epoch_0225'
+    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=f'./models/{trained_model}')
+
+    # === Get Kaggle Test Data ===
+    kaggle_fovs = [fov for fov in os.listdir(provided_code / 'test') if fov.find('FOV_') != -1]
+
+    # === Test Variables ===
+    format_id = args.test_mode
+
+    # 1. Run Inference
+    # NOTE: COMMENT / UNCOMMENT DEBUGGING
+    for fov in tqdm(kaggle_fovs, desc="Testing on FOVs"):
+        fov_num = fov.split('_')[1]
+        epi_stack = load_dax(provided_code / 'test' / f'{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax')
+        print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
+        
+
+        # z_plane = 2  # middle z-plane
+        dapi = epi_stack[6 + z_single * 5]   # frame 16 for z2
+        polyt = epi_stack[5 + z_single * 5]  # frame 15 for z2
+        
+        # ==== Model Inference ====
+        # NOTE TEST DIFFERENT MODELS HERE
+        if format_id == "average-z_dapi-polyt":
+            # extra pre-processing nessicary:
+            avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
+            avg_polyt = generate_z_stack(5, epi_stack) # 6 for dapi, 5 for polyt
+            masks, flows, styles = cellpose_model_test_format([avg_dapi, avg_polyt], model, format_id)
+        else:
+            masks, flows, styles = cellpose_model_test_format([dapi, polyt], model, format_id)
+        # ========================= 
+
+        # print(f'Segmentation complete!')
+        # print(f'Mask shape: {masks.shape}')
+        # print(f'Number of cells found: {masks.max()}')
+        tqdm.write(f'FOV: {fov},  Number of cells found: {masks.max()}')
+
+        kaggle_dir = RESULTS / 'kaggle' / trained_model
+        kaggle_dir.mkdir(parents=True, exist_ok=True)
+        output_file = kaggle_dir / f'{fov}_mask.npy'
+        np.save(output_file, masks)
+
 
 elif args.mode == 'test-infer':
 
@@ -184,7 +248,13 @@ elif args.mode == 'test-infer':
             
             # ==== Model Inference ====
             # NOTE TEST DIFFERENT MODELS HERE
-            masks, flows, styles = cellpose_model_test_format([dapi, polyt], model, format_id)
+            if format_id == "average-z_dapi-polyt":
+                # extra pre-processing nessicary:
+                avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
+                avg_polyt = generate_z_stack(5, epi_stack) # 6 for dapi, 5 for polyt
+                masks, flows, styles = cellpose_model_test_format([dapi, polyt], model, format_id)
+            else:
+                masks, flows, styles = cellpose_model_test_format([dapi, polyt], model, format_id)
             # ========================= 
 
             # print(f'Segmentation complete!')
@@ -228,9 +298,16 @@ elif args.mode == 'test-score':
     print(f"Final Score average_score_across_z: {average_score_across_z / len(z_planes)}\n")
 
 elif args.mode == 'gen-data':
-    # python3 main.py gen-data
-    shutil.rmtree((custom_data_dir / 'train'))
-    shutil.rmtree((custom_data_dir / 'val'))
+    # PROCESSED DATA
+    # python3 main.py gen-data --custom_data_dir average-z_dapi-polyt
+    # python3 main.py gen-data --custom_data_dir dapi_polyt
+
+    # custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
+    custom_data_dir = Path(CUSTOM_DATA / args.custom_data_dir)
+    if (custom_data_dir / 'train').exists():
+        shutil.rmtree((custom_data_dir / 'train'))
+    if (custom_data_dir / 'val').exists():
+        shutil.rmtree((custom_data_dir / 'val'))
     (custom_data_dir / 'train').mkdir(parents=True, exist_ok=True)
     (custom_data_dir / 'val').mkdir(parents=True, exist_ok=True)
 
@@ -251,7 +328,9 @@ elif args.mode == 'gen-data':
 
             # Load the spots train solution, with cell ids, only for FOV_*** and at z = 2
             train_solution_df_fov = train_solution_df[(train_solution_df['fov'] == fov) 
-                                                & (train_solution_df['global_z'] == 2.0)] # NOTE: ONLY Z = 2
+                                                & (train_solution_df['global_z'] == 2.0)] 
+            # NOTE: ONLY Z = 2
+
             # Cell Boundry Mapping
             reference_xy_fov = reference_xy[reference_xy['fov'] == fov]
 
@@ -302,15 +381,34 @@ elif args.mode == 'gen-data':
             dapi = epi_stack[6 + z_plane * 5]   # frame 16 for z2
             polyt = epi_stack[5 + z_plane * 5]  # frame 15 for z2
 
+            # ==== Change Data Modifications ====
             # NOTE: Dataset changing done here
-            cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
+            # Simple balance
+            if args.custom_data_dir == 'dapi_polyt':
+                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
+            elif args.custom_data_dir == 'average-z_dapi-polyt':
+                avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
+                avg_polyt = generate_z_stack(5, epi_stack) # 6 for dapi, 5 for polyt
+                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(avg_dapi, avg_polyt) * 255)
 
             # Original Images:
             # cv2.imwrite(custom_data_dir / train_val_fov[1]  / 'dapi.png', normalize(dapi) * 255)
             # cv2.imwrite(custom_data_dir / train_val_fov[1]  / 'polyt.png', normalize(polyt) * 255)
+            # =================================== 
 
 
 elif args.mode == 'train':
+    # python3 main.py train --custom_data_dir average-z_dapi-polyt
+    # python3 main.py train --custom_data_dir dapi_polyt
+    # --batch_size
+
+    # nohup python3 main.py train --custom_data_dir average-z_dapi-polyt > average-z_dapi-polyt_train.txt 2> average-z_dapi-polyt_train_error.txt &
+
+    # custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
+    custom_data_dir = CUSTOM_DATA / args.custom_data_dir
+    model_dir = Path(MODELS_DIR / args.custom_data_dir)
+    model_dir.mkdir(parents=True, exist_ok=True)
+
     # For running locally on PC
     # nohup python3 main.py train > cellpose_train.txt 2> cellpose_train_error.txt &
     train_dir = (os.getcwd() / custom_data_dir / 'train').__str__() + '/'
@@ -330,6 +428,7 @@ elif args.mode == 'train':
                                 weight_decay=0.1, learning_rate=1e-5,
                                 save_every=20, save_each=True,
                                 batch_size=args.batch_size,
-                                n_epochs=250, model_name="my_new_model")
+                                n_epochs=250, model_name="my_new_model", 
+                                save_path=model_dir)
 # 20 min per 100 epoch
 # 1 hr per 300 epoch

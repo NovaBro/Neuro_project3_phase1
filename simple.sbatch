@@ -15,7 +15,8 @@ set -e
 
 python3 -m venv temp_env
 source temp_env/bin/activate
-pip3 install cellpose pandas scikit-learn
+# pip3 install cellpose pandas scikit-learn
+pip3 install numpy pandas matplotlib anndata kaggle cellpose scipy scikit-learn tifffile pyarrow shapely tqdm
 
 python3 SUBMISSION.py
 

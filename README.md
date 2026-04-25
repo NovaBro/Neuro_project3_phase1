@@ -53,3 +53,4 @@ Here you can adjust gpu size, and time allocated.
   - This is needed for both the train and test split of the Kaggle Training data. 1) for training the model, and 2) testing the model on the Kaggel Training Data
 - ~~VERIFY CLAUD OPTIMIZATION~~
 - ~~Clean up Directory~~
+

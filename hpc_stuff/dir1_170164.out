@@ -1,0 +1,87 @@
+Requirement already satisfied: cellpose in ./temp_env/lib/python3.9/site-packages (4.1.1)
+Requirement already satisfied: pandas in ./temp_env/lib/python3.9/site-packages (2.3.3)
+Requirement already satisfied: scikit-learn in ./temp_env/lib/python3.9/site-packages (1.6.1)
+Requirement already satisfied: torch>=1.6 in ./temp_env/lib/python3.9/site-packages (from cellpose) (2.8.0)
+Requirement already satisfied: torchvision in ./temp_env/lib/python3.9/site-packages (from cellpose) (0.23.0)
+Requirement already satisfied: scipy in ./temp_env/lib/python3.9/site-packages (from cellpose) (1.13.1)
+Requirement already satisfied: numpy>=1.20.0 in ./temp_env/lib/python3.9/site-packages (from cellpose) (2.0.2)
+Requirement already satisfied: opencv-python-headless in ./temp_env/lib/python3.9/site-packages (from cellpose) (4.13.0.92)
+Requirement already satisfied: imagecodecs in ./temp_env/lib/python3.9/site-packages (from cellpose) (2024.12.30)
+Requirement already satisfied: natsort in ./temp_env/lib/python3.9/site-packages (from cellpose) (8.4.0)
+Requirement already satisfied: roifile in ./temp_env/lib/python3.9/site-packages (from cellpose) (2024.9.15)
+Requirement already satisfied: segment_anything in ./temp_env/lib/python3.9/site-packages (from cellpose) (1.0)
+Requirement already satisfied: fastremap in ./temp_env/lib/python3.9/site-packages (from cellpose) (1.18.0)
+Requirement already satisfied: tqdm in ./temp_env/lib/python3.9/site-packages (from cellpose) (4.67.3)
+Requirement already satisfied: fill-voids in ./temp_env/lib/python3.9/site-packages (from cellpose) (2.1.1)
+Requirement already satisfied: tifffile in ./temp_env/lib/python3.9/site-packages (from cellpose) (2024.8.30)
+Requirement already satisfied: pytz>=2020.1 in ./temp_env/lib/python3.9/site-packages (from pandas) (2026.1.post1)
+Requirement already satisfied: python-dateutil>=2.8.2 in ./temp_env/lib/python3.9/site-packages (from pandas) (2.9.0.post0)
+Requirement already satisfied: tzdata>=2022.7 in ./temp_env/lib/python3.9/site-packages (from pandas) (2026.1)
+Requirement already satisfied: threadpoolctl>=3.1.0 in ./temp_env/lib/python3.9/site-packages (from scikit-learn) (3.6.0)
+Requirement already satisfied: joblib>=1.2.0 in ./temp_env/lib/python3.9/site-packages (from scikit-learn) (1.5.3)
+Requirement already satisfied: six>=1.5 in ./temp_env/lib/python3.9/site-packages (from python-dateutil>=2.8.2->pandas) (1.17.0)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.8.93 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.93)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.8.93 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.93)
+Requirement already satisfied: fsspec in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (2025.10.0)
+Requirement already satisfied: nvidia-curand-cu12==10.3.9.90 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (10.3.9.90)
+Requirement already satisfied: nvidia-cusparse-cu12==12.5.8.93 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.5.8.93)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.8.90 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.90)
+Requirement already satisfied: sympy>=1.13.3 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (1.14.0)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.8.90 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.90)
+Requirement already satisfied: jinja2 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (3.1.6)
+Requirement already satisfied: nvidia-cublas-cu12==12.8.4.1 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.4.1)
+Requirement already satisfied: nvidia-nccl-cu12==2.27.3 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (2.27.3)
+Requirement already satisfied: nvidia-cufft-cu12==11.3.3.83 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (11.3.3.83)
+Requirement already satisfied: nvidia-cufile-cu12==1.13.1.3 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (1.13.1.3)
+Requirement already satisfied: triton==3.4.0 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (3.4.0)
+Requirement already satisfied: nvidia-cusolver-cu12==11.7.3.90 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (11.7.3.90)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.7.1 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (0.7.1)
+Requirement already satisfied: typing-extensions>=4.10.0 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (4.15.0)
+Requirement already satisfied: nvidia-nvtx-cu12==12.8.90 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (12.8.90)
+Requirement already satisfied: filelock in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (3.19.1)
+Requirement already satisfied: nvidia-cudnn-cu12==9.10.2.21 in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (9.10.2.21)
+Requirement already satisfied: networkx in ./temp_env/lib/python3.9/site-packages (from torch>=1.6->cellpose) (3.2.1)
+Requirement already satisfied: importlib-metadata in ./temp_env/lib/python3.9/site-packages (from triton==3.4.0->torch>=1.6->cellpose) (8.7.1)
+Requirement already satisfied: setuptools>=40.8.0 in ./temp_env/lib/python3.9/site-packages (from triton==3.4.0->torch>=1.6->cellpose) (58.1.0)
+Requirement already satisfied: pillow!=8.3.*,>=5.3.0 in ./temp_env/lib/python3.9/site-packages (from torchvision->cellpose) (11.3.0)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./temp_env/lib/python3.9/site-packages (from sympy>=1.13.3->torch>=1.6->cellpose) (1.3.0)
+Requirement already satisfied: MarkupSafe>=2.0 in ./temp_env/lib/python3.9/site-packages (from jinja2->torch>=1.6->cellpose) (3.0.3)
+Requirement already satisfied: zipp>=3.20 in ./temp_env/lib/python3.9/site-packages (from importlib-metadata->triton==3.4.0->torch>=1.6->cellpose) (3.23.1)
+Epi stack shape: (27, 2048, 2048)  (frames, height, width)
+Segmentation complete!
+Mask shape: (2048, 2048)
+Number of cells found: 157
+Epi stack shape: (27, 2048, 2048)  (frames, height, width)
+Segmentation complete!
+Mask shape: (2048, 2048)
+Number of cells found: 165
+Epi stack shape: (27, 2048, 2048)  (frames, height, width)
+Segmentation complete!
+Mask shape: (2048, 2048)
+Number of cells found: 172
+Epi stack shape: (27, 2048, 2048)  (frames, height, width)
+Segmentation complete!
+Mask shape: (2048, 2048)
+Number of cells found: 140
+Loading test_spots.csv...
+  224,495 spots across 4 FOVs
+
+Loading masks...
+  FOV_A: shape=(2048, 2048), dtype=uint16, 165 cells
+  FOV_B: shape=(2048, 2048), dtype=uint16, 172 cells
+  FOV_C: shape=(2048, 2048), dtype=uint16, 157 cells
+  FOV_D: shape=(2048, 2048), dtype=uint16, 140 cells
+
+Building submission...
+  FOV_A: 50,689 spots, 165 cells in mask, 17,213 spots assigned (34.0%)
+  FOV_B: 61,070 spots, 172 cells in mask, 20,417 spots assigned (33.4%)
+  FOV_C: 58,224 spots, 157 cells in mask, 18,346 spots assigned (31.5%)
+  FOV_D: 54,512 spots, 140 cells in mask, 16,399 spots assigned (30.1%)
+
+Submission written to full_submission.csv
+  Rows: 224,495
+  Columns: ['spot_id', 'fov', 'cluster_id']
+  Unique clusters: 537
+  Background spots: 152,120
+
+Upload this file to Kaggle for scoring.

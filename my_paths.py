@@ -17,3 +17,6 @@ DATA_DIR = Path('./')
 CUSTOM_DATA = Path('./custom_dataset')
 CUSTOM_DATA.mkdir(parents=True, exist_ok=True)
 COMP_DIR = Path("/scratch/pl2820/competition/")
+
+MODELS_DIR = Path("./models")
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
