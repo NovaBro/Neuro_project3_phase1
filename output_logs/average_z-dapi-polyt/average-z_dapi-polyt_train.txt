@@ -1,0 +1,62 @@
+/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/
+2026-04-24 21:12:26,402 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 21:12:26,402 [INFO] 
+cellpose version: 	4.1.1 
+platform:       	linux 
+python version: 	3.12.3 
+torch version:  	2.11.0+cu130
+2026-04-24 21:12:26,407 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 21:12:27,317 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ folder have labels
+2026-04-24 21:12:27,317 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 21:12:27,430 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/ folder have labels
+2026-04-24 21:12:27,547 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 21:12:27,547 [INFO] >>>> using GPU (CUDA)
+2026-04-24 21:12:28,572 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
+2026-04-24 21:12:28,737 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 21:12:28,740 [INFO] computing flows for labels
+2026-04-24 21:12:54,936 [INFO] computing flows for labels
+2026-04-24 21:12:57,676 [INFO] >>> computing diameters
+2026-04-24 21:12:57,817 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 21:12:58,801 [INFO] >>> n_epochs=250, n_train=32, n_test=4
+2026-04-24 21:12:58,801 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 21:12:58,802 [INFO] >>> saving model to models/average-z_dapi-polyt/models/my_new_model
+2026-04-24 21:13:13,637 [INFO] 0, train_loss=0.8617, test_loss=0.3821, LR=0.000000, time 14.84s
+2026-04-24 21:14:24,264 [INFO] 5, train_loss=0.6093, test_loss=0.2219, LR=0.000006, time 85.46s
+2026-04-24 21:15:34,727 [INFO] 10, train_loss=0.5121, test_loss=0.2268, LR=0.000010, time 155.93s
+2026-04-24 21:17:55,254 [INFO] 20, train_loss=0.4426, test_loss=0.1882, LR=0.000010, time 296.45s
+2026-04-24 21:17:55,254 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0020
+2026-04-24 21:20:16,744 [INFO] 30, train_loss=0.4126, test_loss=0.2208, LR=0.000010, time 437.94s
+2026-04-24 21:22:37,461 [INFO] 40, train_loss=0.4228, test_loss=0.2383, LR=0.000010, time 578.66s
+2026-04-24 21:22:37,461 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0040
+2026-04-24 21:24:58,296 [INFO] 50, train_loss=0.4087, test_loss=0.1527, LR=0.000010, time 719.49s
+2026-04-24 21:27:18,967 [INFO] 60, train_loss=0.4066, test_loss=0.1689, LR=0.000010, time 860.17s
+2026-04-24 21:27:18,967 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0060
+2026-04-24 21:29:39,961 [INFO] 70, train_loss=0.4094, test_loss=0.1414, LR=0.000010, time 1001.16s
+2026-04-24 21:32:00,761 [INFO] 80, train_loss=0.4100, test_loss=0.1651, LR=0.000010, time 1141.96s
+2026-04-24 21:32:00,761 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0080
+2026-04-24 21:34:21,930 [INFO] 90, train_loss=0.4182, test_loss=0.1095, LR=0.000010, time 1283.13s
+2026-04-24 21:36:42,381 [INFO] 100, train_loss=0.3850, test_loss=0.1462, LR=0.000010, time 1423.58s
+2026-04-24 21:36:42,381 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0100
+2026-04-24 21:39:03,526 [INFO] 110, train_loss=0.4336, test_loss=0.1305, LR=0.000010, time 1564.72s
+2026-04-24 21:41:24,179 [INFO] 120, train_loss=0.3921, test_loss=0.0806, LR=0.000010, time 1705.38s
+2026-04-24 21:41:24,179 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0120
+2026-04-24 21:43:45,329 [INFO] 130, train_loss=0.3618, test_loss=0.0856, LR=0.000010, time 1846.53s
+2026-04-24 21:46:06,005 [INFO] 140, train_loss=0.3542, test_loss=0.0978, LR=0.000010, time 1987.20s
+2026-04-24 21:46:06,005 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0140
+2026-04-24 21:48:27,286 [INFO] 150, train_loss=0.3789, test_loss=0.1195, LR=0.000010, time 2128.48s
+2026-04-24 21:50:47,944 [INFO] 160, train_loss=0.3669, test_loss=0.0899, LR=0.000010, time 2269.14s
+2026-04-24 21:50:47,944 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0160
+2026-04-24 21:53:09,617 [INFO] 170, train_loss=0.4143, test_loss=0.1223, LR=0.000010, time 2410.82s
+2026-04-24 21:55:30,386 [INFO] 180, train_loss=0.3741, test_loss=0.1175, LR=0.000010, time 2551.58s
+2026-04-24 21:55:30,386 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0180
+2026-04-24 21:57:51,431 [INFO] 190, train_loss=0.4026, test_loss=0.1414, LR=0.000010, time 2692.63s
+2026-04-24 22:00:12,111 [INFO] 200, train_loss=0.3684, test_loss=0.1279, LR=0.000005, time 2833.31s
+2026-04-24 22:00:12,111 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0200
+2026-04-24 22:02:33,191 [INFO] 210, train_loss=0.4147, test_loss=0.1275, LR=0.000001, time 2974.39s
+2026-04-24 22:04:53,941 [INFO] 220, train_loss=0.3680, test_loss=0.1317, LR=0.000000, time 3115.14s
+2026-04-24 22:04:53,941 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0220
+2026-04-24 22:07:15,063 [INFO] 230, train_loss=0.3743, test_loss=0.1321, LR=0.000000, time 3256.26s
+2026-04-24 22:09:35,835 [INFO] 240, train_loss=0.3449, test_loss=0.1315, LR=0.000000, time 3397.03s
+2026-04-24 22:09:35,835 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0240
+2026-04-24 22:11:42,549 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model
+2026-04-24 22:11:43,804 [INFO] >>> converting network back to torch.bfloat16 after training

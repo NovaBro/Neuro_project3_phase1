@@ -1,0 +1,25 @@
+/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/val/
+2026-04-24 22:42:56,564 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 22:42:56,564 [INFO] 
+cellpose version: 	4.1.1 
+platform:       	linux 
+python version: 	3.12.3 
+torch version:  	2.11.0+cu130
+2026-04-24 22:42:56,570 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 22:42:57,493 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/train/ folder have labels
+2026-04-24 22:42:57,493 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 22:42:57,609 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/val/ folder have labels
+2026-04-24 22:42:57,826 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 22:42:57,826 [INFO] >>>> using GPU (CUDA)
+2026-04-24 22:42:58,841 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
+2026-04-24 22:42:59,002 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 22:42:59,005 [INFO] computing flows for labels
+2026-04-24 22:43:25,382 [INFO] computing flows for labels
+2026-04-24 22:43:28,176 [INFO] >>> computing diameters
+2026-04-24 22:43:28,321 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 22:43:29,557 [INFO] >>> n_epochs=100, n_train=32, n_test=4
+2026-04-24 22:43:29,557 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 22:43:29,558 [INFO] >>> saving model to models/dapi-polyt/models/my_new_model
+2026-04-24 22:43:44,406 [INFO] 0, train_loss=0.7906, test_loss=0.3355, LR=0.000000, time 14.85s
+2026-04-24 22:44:54,985 [INFO] 5, train_loss=0.5980, test_loss=0.2192, LR=0.000006, time 85.43s
+2026-04-24 22:46:05,419 [INFO] 10, train_loss=0.5294, test_loss=0.2043, LR=0.000010, time 155.86s

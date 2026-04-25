@@ -1,5 +1,7 @@
 import re
 import os
+import sys
+import subprocess
 import random
 import shutil
 import argparse
@@ -38,6 +40,9 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('mode', help="What to do, train, test, etc")
+    parser.add_argument('--epochs', default=100, 
+                        # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
+                        help="num epochs")
     parser.add_argument('--test-mode', 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
                         help="Argument to send to test mode")
@@ -47,6 +52,9 @@ def get_args():
     parser.add_argument('--custom_data_dir', default='', 
                         # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
                         help="folder name for new data")
+    parser.add_argument('--model_name', default=None, 
+                        # choices=["cellpose_model_A", "cellpose_model_B", "cellpose_model_C"], 
+                        help="Name of model, within a custom dataset")
     return parser.parse_args()
 
 # === Data Helper Functions ===
@@ -132,9 +140,6 @@ def cellpose_model_test_format(input_data:list, model:CellposeModel, format_id, 
             return masks, flows, styles
 
 
-
-
-
 args = get_args()
 
 # === Initial Setup ===
@@ -143,9 +148,8 @@ all_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
 # all_fovs.sort()
 
 train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100), random_state=SEED)
-train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_state=SEED)
-
-
+# train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_state=SEED)
+val_fovs = test_fovs
 
 # Test different sections of the data
 # all_fovs.sort()
@@ -161,23 +165,94 @@ z_single = 2
 z_planes = [2]
 # z_planes = [0, 1, 2, 3, 4]
 
+# if args.mode in ['kaggle-infer', 'test-infer']:
+#     # For local PC use:
+
+#     # === Test Variables ===
+#     format_id = args.test_mode
+
+#     # === Load Model ===
+#     # NOTE TEST DIFFERENT MODELS HERE
+#     # Cellpose v4+: use CellposeModel (not models.Cellpose)
+#     # model = CellposeModel(model_type='nuclei', gpu=True)
+
+#     # model_name = 'my_new_model_epoch_0225'
+#     model_name = args.model_name
+#     if model_name:
+#         model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=f'./models/{format_id}/models/{model_name}')
+#     else:
+#         model = CellposeModel(model_type='nuclei', gpu=True)
+
+#     # === Get Kaggle Test Data ===
+#     kaggle_fovs = [fov for fov in os.listdir(provided_code / 'test') if fov.find('FOV_') != -1]
+
+#     # === Test Variables ===
+#     format_id = args.test_mode
+
+#     # 1. Run Inference
+#     # NOTE: COMMENT / UNCOMMENT DEBUGGING
+#     for fov in tqdm(kaggle_fovs, desc="Testing on FOVs"):
+#         fov_num = fov.split('_')[1]
+#         if args.mode == 'kaggle-infer':
+#             epi_stack = load_dax(provided_code / 'test' / f'{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax')
+#         elif args.mode == 'test-infer':
+#             epi_stack = load_dax(TRAIN / f'{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax')
+#         else:
+#             exit('INCORRECT MODE: main.py')
+
+
+#         print(f'Epi stack shape: {epi_stack.shape}  (frames, height, width)')
+        
+
+#         # z_plane = 2  # middle z-plane
+#         dapi = epi_stack[6 + z_single * 5]   # frame 16 for z2
+#         polyt = epi_stack[5 + z_single * 5]  # frame 15 for z2
+        
+#         # ==== Model Inference ====
+#         # NOTE TEST DIFFERENT MODELS HERE
+#         if format_id == "average-z_dapi-polyt":
+#             # extra pre-processing nessicary:
+#             avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
+#             avg_polyt = generate_z_stack(5, epi_stack) # 6 for dapi, 5 for polyt
+#             masks, flows, styles = cellpose_model_test_format([avg_dapi, avg_polyt], model, format_id)
+#         else:
+#             masks, flows, styles = cellpose_model_test_format([dapi, polyt], model, format_id)
+#         # ========================= 
+
+#         # print(f'Segmentation complete!')
+#         # print(f'Mask shape: {masks.shape}')
+#         # print(f'Number of cells found: {masks.max()}')
+#         tqdm.write(f'FOV: {fov},  Number of cells found: {masks.max()}')
+
+#         kaggle_dir = RESULTS / 'kaggle' / model_name
+#         kaggle_dir.mkdir(parents=True, exist_ok=True)
+#         output_file = kaggle_dir / f'{fov}_mask.npy'
+#         np.save(output_file, masks)
+
 if args.mode == 'kaggle-infer':
-    # For local
-    # print("Uset the sbatch to create kaggle submission")
+    # For local PC use:
+
+    # === Test Variables ===
+    format_id = args.test_mode
 
     # === Load Model ===
     # NOTE TEST DIFFERENT MODELS HERE
     # Cellpose v4+: use CellposeModel (not models.Cellpose)
     # model = CellposeModel(model_type='nuclei', gpu=True)
 
-    trained_model = 'my_new_model_epoch_0225'
-    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=f'./models/{trained_model}')
+    # model_name = 'my_new_model_epoch_0225'
+    model_name = args.model_name
+    if model_name:
+        full_model_path = (Path(os.getcwd()) / f'models/{format_id}/models/{model_name}').__str__()
+        print(full_model_path)
+        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path)
+    else:
+        model = CellposeModel(model_type='nuclei', gpu=True)
+    # /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/dapi-polyt/models/my_new_model_epoch_0225
+    # /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/dapi-polyt/models/my_new_model_epoch_225
 
     # === Get Kaggle Test Data ===
     kaggle_fovs = [fov for fov in os.listdir(provided_code / 'test') if fov.find('FOV_') != -1]
-
-    # === Test Variables ===
-    format_id = args.test_mode
 
     # 1. Run Inference
     # NOTE: COMMENT / UNCOMMENT DEBUGGING
@@ -207,35 +282,55 @@ if args.mode == 'kaggle-infer':
         # print(f'Number of cells found: {masks.max()}')
         tqdm.write(f'FOV: {fov},  Number of cells found: {masks.max()}')
 
-        kaggle_dir = RESULTS / 'kaggle' / trained_model
+        kaggle_dir = Path(RESULTS / 'kaggle' / format_id / model_name)
         kaggle_dir.mkdir(parents=True, exist_ok=True)
         output_file = kaggle_dir / f'{fov}_mask.npy'
         np.save(output_file, masks)
+    
+    # subprocess.run(
+    #     [
+    #         'python', ''
+    #     ]
+    # )
+
+# # Submission Too Kaggle
+# python provided_code/generate_submission.py \
+#   --mask_A ./results/kaggle/my_new_model_epoch_0225/FOV_A_mask.npy \
+#   --mask_B ./results/kaggle/my_new_model_epoch_0225/FOV_B_mask.npy \
+#   --mask_C ./results/kaggle/my_new_model_epoch_0225/FOV_C_mask.npy \
+#   --mask_D ./results/kaggle/my_new_model_epoch_0225/FOV_D_mask.npy \
+#   --test_spots provided_code/test_spots.csv \
+#   --output cellpose_trained_full_submission.csv
 
 
 elif args.mode == 'test-infer':
+    
+    # === Test Variables ===
+    format_id = args.test_mode
 
     # === Load Model ===
     # NOTE TEST DIFFERENT MODELS HERE
     # Cellpose v4+: use CellposeModel (not models.Cellpose)
     # model = CellposeModel(model_type='nuclei', gpu=True)
 
-    model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model='./models/my_new_model_epoch_0225')
+    model_name = args.model_name
+    if model_name:
+        full_model_path = (Path(os.getcwd()) / f'models/{format_id}/models/{model_name}').__str__()
+        print(full_model_path)
+        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path)
+    else:
+        model = CellposeModel(model_type='nuclei', gpu=True)
 
     # format_id = 'cellpose_model_A'
     # format_id = 'cellpose_model_B'
     # format_id = 'cellpose_model_C'
     # ==================
-    # === Test Variables ===
-    format_id = args.test_mode
 
-    # NOTE: COMMENT / UNCOMMENT DEBUGGING
     if (RESULTS / format_id).exists():
         shutil.rmtree(RESULTS / format_id)
     (RESULTS / format_id).mkdir(parents=True, exist_ok=True)
 
     # 1. Run Inference
-    # NOTE: COMMENT / UNCOMMENT DEBUGGING
     for fov in tqdm(test_fovs, desc="Testing on FOVs"):
         fov_num = fov.split('_')[1]
         epi_stack = load_dax(TRAIN / f'{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax')
@@ -300,9 +395,9 @@ elif args.mode == 'test-score':
 elif args.mode == 'gen-data':
     # PROCESSED DATA
     # python3 main.py gen-data --custom_data_dir average-z_dapi-polyt
-    # python3 main.py gen-data --custom_data_dir dapi_polyt
+    # python3 main.py gen-data --custom_data_dir dapi-polyt
 
-    # custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
+    # custom_data_dir = CUSTOM_DATA / 'dapi-polyt'
     custom_data_dir = Path(CUSTOM_DATA / args.custom_data_dir)
     if (custom_data_dir / 'train').exists():
         shutil.rmtree((custom_data_dir / 'train'))
@@ -384,7 +479,7 @@ elif args.mode == 'gen-data':
             # ==== Change Data Modifications ====
             # NOTE: Dataset changing done here
             # Simple balance
-            if args.custom_data_dir == 'dapi_polyt':
+            if args.custom_data_dir == 'dapi-polyt':
                 cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
             elif args.custom_data_dir == 'average-z_dapi-polyt':
                 avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
@@ -399,12 +494,13 @@ elif args.mode == 'gen-data':
 
 elif args.mode == 'train':
     # python3 main.py train --custom_data_dir average-z_dapi-polyt
-    # python3 main.py train --custom_data_dir dapi_polyt
+    # python3 main.py train --custom_data_dir dapi-polyt
     # --batch_size
 
+    # nohup python3 main.py train --custom_data_dir dapi-polyt > dapi-polyt_train.txt 2> dapi-polyt_train_error.txt &
     # nohup python3 main.py train --custom_data_dir average-z_dapi-polyt > average-z_dapi-polyt_train.txt 2> average-z_dapi-polyt_train_error.txt &
 
-    # custom_data_dir = CUSTOM_DATA / 'dapi_polyt'
+    # custom_data_dir = CUSTOM_DATA / 'dapi-polyt'
     custom_data_dir = CUSTOM_DATA / args.custom_data_dir
     model_dir = Path(MODELS_DIR / args.custom_data_dir)
     model_dir.mkdir(parents=True, exist_ok=True)
@@ -428,7 +524,7 @@ elif args.mode == 'train':
                                 weight_decay=0.1, learning_rate=1e-5,
                                 save_every=20, save_each=True,
                                 batch_size=args.batch_size,
-                                n_epochs=250, model_name="my_new_model", 
+                                n_epochs=args.epochs, model_name="my_new_model", 
                                 save_path=model_dir)
 # 20 min per 100 epoch
 # 1 hr per 300 epoch
