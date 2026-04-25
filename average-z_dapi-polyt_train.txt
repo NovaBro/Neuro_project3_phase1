@@ -1,0 +1,32 @@
+/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/
+2026-04-24 23:45:28,974 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 23:45:28,974 [INFO] 
+cellpose version: 	4.1.1 
+platform:       	linux 
+python version: 	3.12.3 
+torch version:  	2.11.0+cu130
+2026-04-24 23:45:28,979 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 23:45:29,900 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ folder have labels
+2026-04-24 23:45:29,901 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 23:45:30,014 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/ folder have labels
+2026-04-24 23:45:30,014 [WARNING] diam_mean argument are not used in v4.0.1+. Ignoring this argument...
+2026-04-24 23:45:30,014 [WARNING] model_type argument is not used in v4.0.1+. Ignoring this argument...
+2026-04-24 23:45:30,214 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 23:45:30,214 [INFO] >>>> using GPU (CUDA)
+2026-04-24 23:45:31,271 [INFO] >>>> loading model /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/average-z_dapi-polyt/models/my_new_model_epoch_0240
+2026-04-24 23:45:31,635 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 23:45:31,638 [INFO] computing flows for labels
+2026-04-24 23:45:57,874 [INFO] computing flows for labels
+2026-04-24 23:46:00,615 [INFO] >>> computing diameters
+2026-04-24 23:46:00,760 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 23:46:01,908 [INFO] >>> n_epochs=200, n_train=32, n_test=4
+2026-04-24 23:46:01,908 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 23:46:01,908 [INFO] >>> saving model to models/average-z_dapi-polyt/models/my_new_model
+2026-04-24 23:46:14,624 [INFO] 0, train_loss=0.4185, test_loss=0.1312, LR=0.000000, time 12.72s
+2026-04-24 23:47:14,736 [INFO] 5, train_loss=0.3502, test_loss=0.1181, LR=0.000006, time 72.83s
+2026-04-24 23:48:14,718 [INFO] 10, train_loss=0.3957, test_loss=0.1150, LR=0.000010, time 132.81s
+2026-04-24 23:50:14,302 [INFO] 20, train_loss=0.3871, test_loss=0.1251, LR=0.000010, time 252.39s
+2026-04-24 23:50:14,302 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0020
+2026-04-24 23:52:14,737 [INFO] 30, train_loss=0.3544, test_loss=0.1600, LR=0.000010, time 372.83s
+2026-04-24 23:54:14,519 [INFO] 40, train_loss=0.3678, test_loss=0.1520, LR=0.000010, time 492.61s
+2026-04-24 23:54:14,519 [INFO] saving network parameters to models/average-z_dapi-polyt/models/my_new_model_epoch_0040

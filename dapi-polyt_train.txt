@@ -1,25 +1,47 @@
 /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/val/
-2026-04-24 22:42:56,564 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
-2026-04-24 22:42:56,564 [INFO] 
+2026-04-24 23:05:56,249 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-24 23:05:56,249 [INFO] 
 cellpose version: 	4.1.1 
 platform:       	linux 
 python version: 	3.12.3 
 torch version:  	2.11.0+cu130
-2026-04-24 22:42:56,570 [INFO] not all flows are present, running flow generation for all images
-2026-04-24 22:42:57,493 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/train/ folder have labels
-2026-04-24 22:42:57,493 [INFO] not all flows are present, running flow generation for all images
-2026-04-24 22:42:57,609 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/val/ folder have labels
-2026-04-24 22:42:57,826 [INFO] ** TORCH CUDA version installed and working. **
-2026-04-24 22:42:57,826 [INFO] >>>> using GPU (CUDA)
-2026-04-24 22:42:58,841 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
-2026-04-24 22:42:59,002 [INFO] >>> converting bfloat16 network to float32 for training
-2026-04-24 22:42:59,005 [INFO] computing flows for labels
-2026-04-24 22:43:25,382 [INFO] computing flows for labels
-2026-04-24 22:43:28,176 [INFO] >>> computing diameters
-2026-04-24 22:43:28,321 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
-2026-04-24 22:43:29,557 [INFO] >>> n_epochs=100, n_train=32, n_test=4
-2026-04-24 22:43:29,557 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
-2026-04-24 22:43:29,558 [INFO] >>> saving model to models/dapi-polyt/models/my_new_model
-2026-04-24 22:43:44,406 [INFO] 0, train_loss=0.7906, test_loss=0.3355, LR=0.000000, time 14.85s
-2026-04-24 22:44:54,985 [INFO] 5, train_loss=0.5980, test_loss=0.2192, LR=0.000006, time 85.43s
-2026-04-24 22:46:05,419 [INFO] 10, train_loss=0.5294, test_loss=0.2043, LR=0.000010, time 155.86s
+2026-04-24 23:05:56,255 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 23:05:57,186 [INFO] 32 / 32 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/train/ folder have labels
+2026-04-24 23:05:57,187 [INFO] not all flows are present, running flow generation for all images
+2026-04-24 23:05:57,303 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/dapi-polyt/val/ folder have labels
+2026-04-24 23:05:57,303 [WARNING] diam_mean argument are not used in v4.0.1+. Ignoring this argument...
+2026-04-24 23:05:57,303 [WARNING] model_type argument is not used in v4.0.1+. Ignoring this argument...
+2026-04-24 23:05:57,499 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-24 23:05:57,499 [INFO] >>>> using GPU (CUDA)
+2026-04-24 23:05:58,563 [INFO] >>>> loading model /home/william-zheng/.cellpose/models/cpsam
+2026-04-24 23:05:58,725 [INFO] >>> converting bfloat16 network to float32 for training
+2026-04-24 23:05:58,728 [INFO] computing flows for labels
+2026-04-24 23:06:24,941 [INFO] computing flows for labels
+2026-04-24 23:06:27,679 [INFO] >>> computing diameters
+2026-04-24 23:06:27,826 [INFO] >>> normalizing {'lowhigh': None, 'percentile': None, 'normalize': True, 'norm3D': True, 'sharpen_radius': 0, 'smooth_radius': 0, 'tile_norm_blocksize': 0, 'tile_norm_smooth3D': 1, 'invert': False}
+2026-04-24 23:06:28,875 [INFO] >>> n_epochs=200, n_train=32, n_test=4
+2026-04-24 23:06:28,875 [INFO] >>> AdamW, learning_rate=0.00001, weight_decay=0.10000
+2026-04-24 23:06:28,875 [INFO] >>> saving model to models/dapi-polyt/models/my_new_model
+2026-04-24 23:06:41,536 [INFO] 0, train_loss=0.7777, test_loss=0.3355, LR=0.000000, time 12.66s
+2026-04-24 23:07:41,729 [INFO] 5, train_loss=0.6445, test_loss=0.2373, LR=0.000006, time 72.85s
+2026-04-24 23:08:42,004 [INFO] 10, train_loss=0.5408, test_loss=0.2078, LR=0.000010, time 133.13s
+2026-04-24 23:10:41,745 [INFO] 20, train_loss=0.4403, test_loss=0.2142, LR=0.000010, time 252.87s
+2026-04-24 23:10:41,745 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0020
+2026-04-24 23:12:42,453 [INFO] 30, train_loss=0.4112, test_loss=0.1964, LR=0.000010, time 373.58s
+2026-04-24 23:14:42,417 [INFO] 40, train_loss=0.3838, test_loss=0.2074, LR=0.000010, time 493.54s
+2026-04-24 23:14:42,417 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0040
+2026-04-24 23:16:42,729 [INFO] 50, train_loss=0.3889, test_loss=0.2063, LR=0.000010, time 613.85s
+2026-04-24 23:18:42,532 [INFO] 60, train_loss=0.3894, test_loss=0.1929, LR=0.000010, time 733.66s
+2026-04-24 23:18:42,533 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0060
+2026-04-24 23:20:42,929 [INFO] 70, train_loss=0.3910, test_loss=0.1389, LR=0.000010, time 854.05s
+2026-04-24 23:22:42,748 [INFO] 80, train_loss=0.3829, test_loss=0.1681, LR=0.000010, time 973.87s
+2026-04-24 23:22:42,748 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0080
+2026-04-24 23:24:43,233 [INFO] 90, train_loss=0.3910, test_loss=0.1172, LR=0.000010, time 1094.36s
+2026-04-24 23:26:42,820 [INFO] 100, train_loss=0.3609, test_loss=0.1186, LR=0.000010, time 1213.94s
+2026-04-24 23:26:42,821 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0100
+2026-04-24 23:28:43,436 [INFO] 110, train_loss=0.4044, test_loss=0.1250, LR=0.000010, time 1334.56s
+2026-04-24 23:30:43,285 [INFO] 120, train_loss=0.3612, test_loss=0.0999, LR=0.000010, time 1454.41s
+2026-04-24 23:30:43,285 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0120
+2026-04-24 23:32:43,380 [INFO] 130, train_loss=0.3375, test_loss=0.0897, LR=0.000010, time 1574.50s
+2026-04-24 23:34:43,122 [INFO] 140, train_loss=0.3291, test_loss=0.0845, LR=0.000010, time 1694.25s
+2026-04-24 23:34:43,122 [INFO] saving network parameters to models/dapi-polyt/models/my_new_model_epoch_0140

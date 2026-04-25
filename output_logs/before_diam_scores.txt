@@ -1,0 +1,32 @@
+(env) william-zheng@william-zheng-B650-EAGLE-AX:~/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1$ python3 main.py test-score --test-mode cellpose_model_A
+Loading spots_train_w_cell_id_solution.csv ...
+ 232,323 spots across 4 FOVs
+  FOV_029: 11,891 spots, 282 cells in mask, 4,476 spots assigned (37.6%)
+  FOV_039: 13,496 spots, 120 cells in mask, 4,234 spots assigned (31.4%)
+  FOV_010: 13,058 spots, 116 cells in mask, 4,224 spots assigned (32.3%)
+  FOV_016: 12,227 spots, 123 cells in mask, 3,772 spots assigned (30.8%)
+==== Final Results ====
+Format: cellpose_model_A
+Final Score average_score_across_z: 0.6587753717382221
+
+(env) william-zheng@william-zheng-B650-EAGLE-AX:~/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1$ python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
+python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0120
+Loading spots_train_w_cell_id_solution.csv ...
+ 232,323 spots across 4 FOVs
+  FOV_029: 11,891 spots, 210 cells in mask, 4,019 spots assigned (33.8%)
+  FOV_039: 13,496 spots, 99 cells in mask, 4,553 spots assigned (33.7%)
+  FOV_010: 13,058 spots, 98 cells in mask, 4,482 spots assigned (34.3%)
+  FOV_016: 12,227 spots, 87 cells in mask, 3,764 spots assigned (30.8%)
+==== Final Results ====
+Format: dapi-polyt
+Final Score average_score_across_z: 0.7257783033954117
+
+Loading spots_train_w_cell_id_solution.csv ...
+ 232,323 spots across 4 FOVs
+  FOV_029: 11,891 spots, 217 cells in mask, 3,833 spots assigned (32.2%)
+  FOV_039: 13,496 spots, 93 cells in mask, 4,113 spots assigned (30.5%)
+  FOV_010: 13,058 spots, 92 cells in mask, 4,131 spots assigned (31.6%)
+  FOV_016: 12,227 spots, 83 cells in mask, 3,431 spots assigned (28.1%)
+==== Final Results ====
+Format: average-z_dapi-polyt
+Final Score average_score_across_z: 0.7015247901578185

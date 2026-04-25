@@ -150,6 +150,7 @@ all_fovs = [fov for fov in os.listdir(TRAIN) if fov.find('FOV_') != -1]
 train_fovs, test_fovs = train_test_split(all_fovs, train_size=(90/100), random_state=SEED)
 # train_fovs, val_fovs = train_test_split(train_fovs, train_size=(80/90), random_state=SEED)
 val_fovs = test_fovs
+DIAM = 20.0
 
 # Test different sections of the data
 # all_fovs.sort()
@@ -245,9 +246,9 @@ if args.mode == 'kaggle-infer':
     if model_name:
         full_model_path = (Path(os.getcwd()) / f'models/{format_id}/models/{model_name}').__str__()
         print(full_model_path)
-        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path)
+        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path, diam_mean=DIAM)
     else:
-        model = CellposeModel(model_type='nuclei', gpu=True)
+        model = CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM)
     # /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/dapi-polyt/models/my_new_model_epoch_0225
     # /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/dapi-polyt/models/my_new_model_epoch_225
 
@@ -317,9 +318,9 @@ elif args.mode == 'test-infer':
     if model_name:
         full_model_path = (Path(os.getcwd()) / f'models/{format_id}/models/{model_name}').__str__()
         print(full_model_path)
-        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path)
+        model = CellposeModel(model_type='nuclei', gpu=True, pretrained_model=full_model_path, diam_mean=DIAM)
     else:
-        model = CellposeModel(model_type='nuclei', gpu=True)
+        model = CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM)
 
     # format_id = 'cellpose_model_A'
     # format_id = 'cellpose_model_B'
@@ -500,6 +501,10 @@ elif args.mode == 'train':
     # nohup python3 main.py train --custom_data_dir dapi-polyt > dapi-polyt_train.txt 2> dapi-polyt_train_error.txt &
     # nohup python3 main.py train --custom_data_dir average-z_dapi-polyt > average-z_dapi-polyt_train.txt 2> average-z_dapi-polyt_train_error.txt &
 
+    # Longer Epoch
+    # nohup python3 main.py train --custom_data_dir dapi-polyt --epochs 200 --batch_size 2 > dapi-polyt_train.txt 2> dapi-polyt_train_error.txt &
+    # nohup python3 main.py train --custom_data_dir average-z_dapi-polyt --epochs 200 --batch_size 2 > average-z_dapi-polyt_train.txt 2> average-z_dapi-polyt_train_error.txt &
+
     # custom_data_dir = CUSTOM_DATA / 'dapi-polyt'
     custom_data_dir = CUSTOM_DATA / args.custom_data_dir
     model_dir = Path(MODELS_DIR / args.custom_data_dir)
@@ -516,15 +521,20 @@ elif args.mode == 'train':
                                     mask_filter="_masks", look_one_level_down=False)
     images, labels, image_names, test_images, test_labels, image_names_test = output
 
-    model = models.CellposeModel(gpu=True)
+    # New load
+    # model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM)
+    # Load from prev:
+    model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM, pretrained_model='/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/average-z_dapi-polyt/models/my_new_model_epoch_0240')
 
     model_path, train_losses, test_losses = train.train_seg(model.net,
                                 train_data=images, train_labels=labels,
                                 test_data=test_images, test_labels=test_labels,
                                 weight_decay=0.1, learning_rate=1e-5,
                                 save_every=20, save_each=True,
-                                batch_size=args.batch_size,
-                                n_epochs=args.epochs, model_name="my_new_model", 
+                                batch_size=int(args.batch_size),
+                                n_epochs=int(args.epochs), model_name="my_new_model", 
                                 save_path=model_dir)
 # 20 min per 100 epoch
 # 1 hr per 300 epoch
+
+# NOTE: CellposeModel has been using model_type=None the hwole time!!! diam = 30 too
