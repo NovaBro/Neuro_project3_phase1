@@ -399,6 +399,7 @@ elif args.mode == 'gen-data':
     # python3 main.py gen-data --custom_data_dir dapi-polyt
 
     # custom_data_dir = CUSTOM_DATA / 'dapi-polyt'
+    # Reset Data Directory
     custom_data_dir = Path(CUSTOM_DATA / args.custom_data_dir)
     if (custom_data_dir / 'train').exists():
         shutil.rmtree((custom_data_dir / 'train'))
@@ -470,6 +471,9 @@ elif args.mode == 'gen-data':
 
             # MASKED SOLUTION
             cv2.imwrite(custom_data_dir / train_val_fov[1] / f'cells_{fov_num}_masks.png', master_mask)
+            # master_mask = master_mask[..., np.newaxis]
+            # master_mask = np.tile(master_mask, 3)
+            # np.save(custom_data_dir / train_val_fov[1] / f'cells_{fov_num}_masks.png', master_mask)
 
             # Mixed Input Image
             epi_stack = load_dax(TRAIN /  f"{fov}/Epi-750s5-635s5-545s1-473s5-408s5_{fov.split('_')[1]}.dax")
@@ -481,11 +485,19 @@ elif args.mode == 'gen-data':
             # NOTE: Dataset changing done here
             # Simple balance
             if args.custom_data_dir == 'dapi-polyt':
-                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(dapi, polyt) * 255)
+                save_image = generate_mix(dapi, polyt) * 255
+                save_image = save_image[..., np.newaxis]
+                save_image = np.tile(save_image, 3)
+                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', save_image)
+                # np.save(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', save_image)
             elif args.custom_data_dir == 'average-z_dapi-polyt':
                 avg_dapi = generate_z_stack(6, epi_stack) # 6 for dapi, 5 for polyt
                 avg_polyt = generate_z_stack(5, epi_stack) # 6 for dapi, 5 for polyt
-                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', generate_mix(avg_dapi, avg_polyt) * 255)
+                save_image = generate_mix(avg_dapi, avg_polyt) * 255
+                save_image = save_image[..., np.newaxis]
+                save_image = np.tile(save_image, 3)
+                cv2.imwrite(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', save_image)
+                # np.save(custom_data_dir / train_val_fov[1]  / f'cells_{fov_num}_img.png', save_image)
 
             # Original Images:
             # cv2.imwrite(custom_data_dir / train_val_fov[1]  / 'dapi.png', normalize(dapi) * 255)
@@ -522,9 +534,10 @@ elif args.mode == 'train':
     images, labels, image_names, test_images, test_labels, image_names_test = output
 
     # New load
-    # model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM)
+    model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM)
+    
     # Load from prev:
-    model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM, pretrained_model='/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/average-z_dapi-polyt/models/my_new_model_epoch_0240')
+    # model = models.CellposeModel(model_type='nuclei', gpu=True, diam_mean=DIAM, pretrained_model='/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/models/average-z_dapi-polyt/models/my_new_model_epoch_0240')
 
     model_path, train_losses, test_losses = train.train_seg(model.net,
                                 train_data=images, train_labels=labels,
@@ -533,7 +546,8 @@ elif args.mode == 'train':
                                 save_every=20, save_each=True,
                                 batch_size=int(args.batch_size),
                                 n_epochs=int(args.epochs), model_name="my_new_model", 
-                                save_path=model_dir)
+                                save_path=model_dir, channels=[0, 0])
+    # TODO: TRY USING LAYERED DAPI and POLYT in the channel layer of the image
 # 20 min per 100 epoch
 # 1 hr per 300 epoch
 
