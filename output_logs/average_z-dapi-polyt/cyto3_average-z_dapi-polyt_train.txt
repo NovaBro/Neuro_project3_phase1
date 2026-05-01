@@ -1,0 +1,15 @@
+/home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/
+2026-04-28 16:25:16,867 [INFO] WRITING LOG OUTPUT TO /home/william-zheng/.cellpose/run.log
+2026-04-28 16:25:16,867 [INFO] 
+cellpose version: 	3.1.1.3 
+platform:       	linux 
+python version: 	3.12.3 
+torch version:  	2.11.0+cu130
+2026-04-28 16:25:16,872 [INFO] not all flows are present, running flow generation for all images
+2026-04-28 16:25:18,701 [INFO] 36 / 36 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/train/ folder have labels
+2026-04-28 16:25:18,701 [INFO] not all flows are present, running flow generation for all images
+2026-04-28 16:25:18,906 [INFO] 4 / 4 images in /home/william-zheng/Documents/Programming/Python/NeuroInformatics/Neuro_project3_phase1/custom_dataset/average-z_dapi-polyt/val/ folder have labels
+2026-04-28 16:25:19,020 [INFO] ** TORCH CUDA version installed and working. **
+2026-04-28 16:25:19,020 [INFO] >>>> using GPU (CUDA)
+2026-04-28 16:25:19,050 [INFO] >>>> no model weights loaded
+2026-04-28 16:25:19,050 [INFO] computing flows for labels

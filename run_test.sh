@@ -1,7 +1,7 @@
 set -e
 
 # === Test Inference ===
-# python3 main.py test-infer --test-mode cellpose_model_A 
+python3 main.py test-infer --test-mode cellpose_model_A 
 # python3 main.py test-infer --test_mode cellpose_model_B
 # python3 main.py test-infer --test_mode cellpose_model_C
 # python3 main.py test-infer --test_mode cellpose_model_D
@@ -9,11 +9,11 @@ set -e
 # python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoch_0225
 # python3 main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0120
 
-python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-# python3 main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0140
+# python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoch_0225
+python3 main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
 
 # === Test Scoring ===
-# python3 main.py test-score --test-mode cellpose_model_A 
+python3 main.py test-score --test-mode cellpose_model_A 
 # python3 main.py test-score --test_mode cellpose_model_B
 # python3 main.py test-score --test_mode cellpose_model_C
 # python3 main.py test-score --test_mode cellpose_model_D
@@ -21,8 +21,8 @@ python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoc
 # python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
 # python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0120
 
-python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-# python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0140
+# python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
+python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
 
 
 # WHOLE: DEPRICATED
