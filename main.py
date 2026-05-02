@@ -44,18 +44,22 @@ CLI_MODES = (
 
 EXAMPLES = """\
 examples:
-  python main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
-  python main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
-  python main.py kaggle-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0040
+  python main.py test-infer --format-id average-z_dapi-polyt --model_name my_new_model_epoch_0160
+  python main.py test-score --format-id average-z_dapi-polyt --model_name my_new_model_epoch_0160
+  python main.py kaggle-infer --format-id average-z_dapi-polyt --model_name my_new_model_epoch_0040
   python main.py gen-data --custom_data_dir dapi-polyt
-  python main.py train --custom_data_dir dapi-polyt --epochs 100 --batch_size 10
+  python main.py train --model_type cyto3 --custom_data_dir dapi-polyt --epochs 100 --batch_size 10
+  python main.py train --model_type cyto3 --custom_data_dir average-z_dapi-polyt --epochs 100 --batch_size 10
+  
+  batchsize 10 ~ 3.2 GB
+  batchsize 30 ~ 9.5 GB
 """
 
 
 @dataclass
 class PipelineConfig:
     seed: int = 42
-    diam: float = 20.0
+    diam: int = 20
     z_single: int = 2
     z_planes: list[int] = field(default_factory=lambda: [2])
 
@@ -73,7 +77,7 @@ def parse_args():
         help="Pipeline step to run",
     )
     parser.add_argument("--epochs", default=100, help="training epochs")
-    parser.add_argument("--test-mode", help="preprocessing preset id (e.g. dapi-polyt)")
+    parser.add_argument("--format_id", help="preprocessing preset id (e.g. dapi-polyt)")
     parser.add_argument(
         "--batch_size",
         default=10,
@@ -83,7 +87,12 @@ def parse_args():
     parser.add_argument(
         "--model_name",
         default=None,
-        help="checkpoint folder name under models/<test-mode>/models/",
+        help="checkpoint folder name under models/<dataset>/models/",
+    )
+    parser.add_argument(
+        "--model_type",
+        default="nuclei",
+        help="Cellpose backbone for inference/train; must match when loading a checkpoint (e.g. cyto3-trained weights need --model_type cyto3).",
     )
     return parser.parse_args()
 
@@ -114,9 +123,9 @@ def aggregate_cell_boundary(group: pd.DataFrame) -> pd.Series:
 
 
 def run_kaggle_infer(args, cfg: PipelineConfig) -> None:
-    format_id = args.test_mode
+    format_id = args.format_id
     model = build_cellpose_model(
-        preset="kaggle",
+        model_type=args.model_type,
         format_id=format_id,
         model_name=args.model_name,
         diam_mean=cfg.diam,
@@ -132,16 +141,19 @@ def run_kaggle_infer(args, cfg: PipelineConfig) -> None:
             provided_code / "test" / fov / f"Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax"
         )
         epi_stack = load_dax(stack_path)
-        print(f"Epi stack shape: {epi_stack.shape}  (frames, height, width)")
-        masks = predict_masks_from_epi_stack(epi_stack, model, format_id, cfg.z_single)
+        tqdm.write(f"Epi stack shape: {epi_stack.shape}  (frames, height, width)")
+        # Pass the same diameter as diam_mean on the model (training used cfg.diam).
+        masks = predict_masks_from_epi_stack(
+            epi_stack, model, format_id, cfg.z_single, diameter=cfg.diam
+        )
         tqdm.write(f"FOV: {fov},  Number of cells found: {masks.max()}")
         np.save(out_root / f"{fov}_mask.npy", masks)
 
 
 def run_test_infer(args, cfg: PipelineConfig, test_fovs: list[str]) -> None:
-    format_id = args.test_mode
+    format_id = args.format_id
     model = build_cellpose_model(
-        preset="local_test",
+        model_type=args.model_type,
         format_id=format_id,
         model_name=args.model_name,
         diam_mean=cfg.diam,
@@ -158,13 +170,15 @@ def run_test_infer(args, cfg: PipelineConfig, test_fovs: list[str]) -> None:
             TRAIN / fov / f"Epi-750s5-635s5-545s1-473s5-408s5_{fov_num}.dax"
         )
         for z_plane in cfg.z_planes:
-            masks = predict_masks_from_epi_stack(epi_stack, model, format_id, z_plane)
+            masks = predict_masks_from_epi_stack(
+                epi_stack, model, format_id, z_plane, diameter=float(cfg.diam)
+            )
             tqdm.write(f"FOV: {fov},  Number of cells found: {masks.max()}")
             np.save(result_dir / f"{fov}_z{z_plane}_mask.npy", masks)
 
 
 def run_test_score(args, cfg: PipelineConfig, test_fovs: list[str]) -> None:
-    format_id = args.test_mode
+    format_id = args.format_id
     print("Loading spots_train_w_cell_id_solution.csv ...")
     train_solution_df = pd.read_csv("results/spots_train_w_cell_id_solution.csv")
     train_solution_df = train_solution_df[train_solution_df["fov"].isin(test_fovs)]
@@ -189,7 +203,8 @@ def run_test_score(args, cfg: PipelineConfig, test_fovs: list[str]) -> None:
     print(f"Final Score average_score_across_z: {average_score_across_z / len(cfg.z_planes)}\n")
 
 
-def run_gen_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
+def gen_cellpose_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
+    """Generate cell images and cell masks needed to train cellpose model"""
     custom_data_dir = CUSTOM_DATA / args.custom_data_dir
     for sub in ("train", "val"):
         p = custom_data_dir / sub
@@ -197,6 +212,7 @@ def run_gen_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
             shutil.rmtree(p)
         p.mkdir(parents=True, exist_ok=True)
 
+    # This was generated, maps the spots train with the cell id, determined by point in polygon (cell boundaries)
     train_solution_df = pd.read_csv("results/spots_train_w_cell_id_solution.csv")
     cell_boundaries_train_df = pd.read_csv(
         provided_code / "train/ground_truth/cell_boundaries_train.csv"
@@ -209,11 +225,13 @@ def run_gen_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
 
     for fov_list, split_name in ((train_fovs, "train"), (val_fovs, "val")):
         for fov in tqdm(fov_list, desc=f"gen-data {split_name}"):
+            # Get meta-data of the training / val data
             fov_num = fov.split("_")[1]
             train_solution_df_fov = train_solution_df[
                 (train_solution_df["fov"] == fov) & (train_solution_df["global_z"] == 2.0)
             ]
             reference_xy_fov = reference_xy[reference_xy["fov"] == fov]
+            # Get cell boundaries that are only found in the training data.
             solution_cells_df = cell_boundaries_train_df.merge(
                 train_solution_df_fov, how="inner", on="gt_cluster_id"
             )
@@ -229,14 +247,17 @@ def run_gen_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
                 ]
             ]
 
+            # Collapse Dataframe, such that each unique cell id gets 1 cell boundry
             apply_solution_cells_df = (
                 solution_cells_df.groupby("gt_cluster_id", group_keys=False)
                 .apply(aggregate_cell_boundary)
                 .reset_index()
             )
 
+            # Generate Masks for cellpose training
             master_mask = np.zeros((2048, 2048), dtype=np.int32)
 
+            # Convert global coordinates for cell boundaries to pixel values for cv2 image generation
             for i in range(len(apply_solution_cells_df)):
                 x_data = apply_solution_cells_df.loc[i, "boundaryX_z2"]
                 y_data = apply_solution_cells_df.loc[i, "boundaryY_z2"]
@@ -256,6 +277,7 @@ def run_gen_data(args, train_fovs: list[str], val_fovs: list[str]) -> None:
                 master_mask,
             )
 
+            # Now we generate image data based on the epi dax data
             epi_stack = load_dax(
                 TRAIN / fov / f"Epi-750s5-635s5-545s1-473s5-408s5_{fov.split('_')[1]}.dax"
             )
@@ -306,7 +328,7 @@ def run_train(args, cfg: PipelineConfig) -> None:
         )
     )
 
-    model = models.CellposeModel(gpu=True, diam_mean=cfg.diam)
+    model = models.CellposeModel(model_type=args.model_type, gpu=True, diam_mean=cfg.diam)
     train.train_seg(
         model.net,
         train_data=images,
@@ -319,7 +341,7 @@ def run_train(args, cfg: PipelineConfig) -> None:
         save_each=True,
         batch_size=int(args.batch_size),
         n_epochs=int(args.epochs),
-        model_name="my_new_model",
+        model_name=f"my_new_model_{args.model_type}",
         save_path=model_dir,
         channels=[0, 0],
     )
@@ -338,7 +360,7 @@ def main():
         case "test-score":
             run_test_score(args, cfg, test_fovs)
         case "gen-data":
-            run_gen_data(args, train_fovs, val_fovs)
+            gen_cellpose_data(args, train_fovs, val_fovs)
         case "train":
             run_train(args, cfg)
 

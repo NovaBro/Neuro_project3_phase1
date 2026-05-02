@@ -1,28 +1,32 @@
 set -e
 
 # === Test Inference ===
-python3 main.py test-infer --test-mode cellpose_model_A 
-# python3 main.py test-infer --test_mode cellpose_model_B
-# python3 main.py test-infer --test_mode cellpose_model_C
-# python3 main.py test-infer --test_mode cellpose_model_D
+# Phase 1 Baseline
+python3 main.py test-infer --model_type cpsam --format_id dapi-data 
+# python3 main.py test-infer --format_id polyt_data
+# python3 main.py test-infer --format_id dapi-polyt_75-25
+# python3 main.py test-infer --format_id cellpose_model_D
 
-# python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-# python3 main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0120
+# python3 main.py test-infer --format_id dapi-polyt --model_name my_new_model_epoch_0225
+# python3 main.py test-infer --format_id average-z_dapi-polyt --model_name my_new_model_epoch_0120
 
-# python3 main.py test-infer --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-python3 main.py test-infer --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
+python3 main.py test-infer --model_type cpsam --format_id dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0220
+# python3 main.py test-infer --model_type cyto3 --format_id dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0220
+# python3 main.py test-infer --model_type cyto3 --format_id average-z_dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0280
 
 # === Test Scoring ===
-python3 main.py test-score --test-mode cellpose_model_A 
-# python3 main.py test-score --test_mode cellpose_model_B
-# python3 main.py test-score --test_mode cellpose_model_C
-# python3 main.py test-score --test_mode cellpose_model_D
+# Phase 1 Baseline
+python3 main.py test-score --model_type cpsam --format_id dapi-data 
+# python3 main.py test-score --format_id polyt_data
+# python3 main.py test-score --format_id dapi-polyt_75-25
+# python3 main.py test-score --format_id cellpose_model_D
 
-# python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-# python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0120
+# python3 main.py test-score --format_id dapi-polyt --model_name my_new_model_epoch_0225
+# python3 main.py test-score --format_id average-z_dapi-polyt --model_name my_new_model_epoch_0120
 
-# python3 main.py test-score --test-mode dapi-polyt --model_name my_new_model_epoch_0225
-python3 main.py test-score --test-mode average-z_dapi-polyt --model_name my_new_model_epoch_0160
+python3 main.py test-score --model_type cpsam --format_id dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0220
+# python3 main.py test-score --model_type cyto3 --format_id dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0220
+# python3 main.py test-score --model_type cyto3 --format_id average-z_dapi-polyt --model_name my_new_model_epoch_cyto3_epoch_0280
 
 
 # WHOLE: DEPRICATED

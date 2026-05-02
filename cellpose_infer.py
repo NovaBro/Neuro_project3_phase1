@@ -16,24 +16,16 @@ def pretrained_path_for_format(format_id: str, model_name: str) -> str:
 
 def build_cellpose_model(
     *,
-    preset: str,
+    model_type: str,
     format_id: str,
     model_name: str | None,
     diam_mean: float,
 ) -> CellposeModel:
-    """
-    preset: \"kaggle\" uses nuclei; \"local_test\" uses cyto3 (historic training setup).
-    """
-    if preset == "kaggle":
-        model_type = "nuclei"
-    elif preset == "local_test":
-        model_type = "cyto3"
-    else:
-        raise ValueError(f"unknown preset: {preset}")
 
     if model_name:
         path = pretrained_path_for_format(format_id, model_name)
-        print(path)
+        print(f"\nLoading Model From: {path}")
+        if not Path(path).exists(): exit("MODEL PATH DOESNT EXIST or MODEL DOESNT EXIST: FAIL")
         return CellposeModel(
             model_type=model_type,
             gpu=True,
@@ -47,20 +39,20 @@ def cellpose_model_test_format(
     input_data: list,
     model: CellposeModel,
     format_id: str,
-    diameter=30,
+    diameter:int=30,
     channels=(0, 0),
 ):
     ch = list(channels)
     match format_id:
-        case "cellpose_model_A":
+        case "dapi-data":
             dapi, polyt = input_data
             return model.eval(dapi, diameter, ch)
 
-        case "cellpose_model_B":
+        case "polyt-data":
             dapi, polyt = input_data
             return model.eval(polyt, diameter, ch)
 
-        case "cellpose_model_C":
+        case "dapi-polyt_75-25":
             dapi, polyt = input_data
             weighted_average_input = 0.25 * normalize(polyt) + 0.75 * normalize(dapi)
             return model.eval(weighted_average_input, diameter, ch)
@@ -90,10 +82,14 @@ def predict_masks_from_epi_stack(
     format_id: str,
     z_plane: int,
     *,
-    diameter: float = 30,
+    diameter: int = 30,
     channels=(0, 0),
 ):
-    """Run Cellpose once per FOV stack; handles average-z preprocessing when needed."""
+    """Run Cellpose once per FOV stack; handles average-z preprocessing when needed.
+
+    ``diameter`` should match the ``diam_mean`` used when training / constructing the
+    model (see Cellpose ``eval``): finetuned runs typically use the same value everywhere.
+    """
 
     if format_id == AVERAGE_Z_DAPI_POLYT:
         avg_dapi = generate_z_stack(6, epi_stack)
